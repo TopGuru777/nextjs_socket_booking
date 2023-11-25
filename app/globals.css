@@ -1,0 +1,79 @@
+@import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+@import "react-big-calendar/lib/css/react-big-calendar.css";
+@import "react-datepicker/dist/react-datepicker.css";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: #000;
+  background: #fff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button:focus-visible {
+  outline: transparent;
+}
+.rbc-event.rbc-selected {
+  background-color: currentColor;
+}
+.react-datepicker-wrapper {
+  width: 100%;
+}
+.rbc-day-slot .rbc-event,
+.rbc-day-slot .rbc-background-event {
+  overflow: visible;
+}
+.event-popper {
+  z-index: 1;
+}
+.event-popper[data-placement^="bottom"] .event-triangle::before,
+.event-popper[data-placement^="bottom"] .event-triangle::after {
+  box-sizing: content-box;
+  position: absolute;
+  border: 8px solid transparent;
+  height: 0;
+  width: 1px;
+  content: "";
+  z-index: -1;
+  border-width: 8px;
+  left: -8px;
+}
+.event-popper[data-placement^="bottom"] .event-triangle {
+  top: 0;
+  margin-top: -8px;
+}
+.event-popper[data-placement^="bottom"] .event-triangle::before,
+.event-popper[data-placement^="bottom"] .event-triangle::after {
+  border-top: none;
+  border-bottom-color: #fff;
+}
+.event-popper[data-placement^="bottom"] .event-triangle::before {
+  top: -1px;
+  border-bottom-color: #fff;
+}
+.event-popper[data-placement^="bottom"] .event-triangle::after {
+  top: 0;
+}
+.event-popper[data-placement^=right] {
+  padding-left: 10px;
+}
+
+.event-popper[data-placement^=left] {
+  padding-right: 16px;
+}
