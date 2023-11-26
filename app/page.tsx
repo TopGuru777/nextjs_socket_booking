@@ -1,15 +1,15 @@
-import { BookingType, ServiceType, StaffType } from "@/types";
+import { BookingType, ServiceType, StaffType } from "@/app/types";
 import {
   getBookingList,
   getServiceList,
   getStaffList,
   getStatusList,
-} from "@/services";
+} from "@/app/services";
 import dynamic from "next/dynamic";
 
-const BookingCalender = dynamic(() => import('@/components/calender'), {
+const BookingCalender = dynamic(() => import("@/app/components/calender"), {
   ssr: false,
-})
+});
 
 const getStaff = (data: StaffType[]) => {
   return data
