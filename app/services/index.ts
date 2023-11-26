@@ -1,4 +1,5 @@
-import { AUTH_TOKEN, BASE_API } from "@/app/utils/variables";
+const AUTH_TOKEN = process.env.NEXT_PUBLIC_AUTH_TOKEN!;
+const BASE_API = process.env.NEXT_PUBLIC_BASE_API;
 
 export const getBookingList = async () => {
   try {
