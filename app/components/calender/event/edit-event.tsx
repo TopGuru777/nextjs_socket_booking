@@ -226,10 +226,10 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent }: Props) => {
             <div>
               <label
                 htmlFor="customer"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Customer
               </label>
+              
               <AutoComplete onSelect={onChange} />
             </div>
           )}

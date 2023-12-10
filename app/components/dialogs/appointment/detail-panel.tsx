@@ -5,6 +5,8 @@ import SelectDateDropdown from "@/app/components/select-date";
 import Dropdown from "@components/Dropdown";
 import { ServiceType, StatusType } from "@/app/types";
 import SelectTimeDropdown from "@/app/components/select-time";
+import AutoComplete from "../../AutoComplete";
+import { searchCustomer } from "@/app/services";
 
 interface Props {
   startEvent: Date;
@@ -48,6 +50,35 @@ const DetailPanel = ({
     label: service.title,
     value: service.uuid,
   }));
+  
+
+  const handleChange = async (text: string) => {
+    // setValue(text);
+    console.log("Ghaleda dai ", text)
+    // setCursor(-1);
+    if (text.trim().length > 2) {
+      // setLoading(true);
+      searchCustomer(text)
+        .then((response) => {
+          console.log("niroj Ghale")
+          // setLoading(false);
+          // setOptions(
+          //   response?.map((option: CustomerType) => ({
+          //     ...option,
+          //     id: option.uuid,
+          //     name: `${option.first_name} ${option.last_name}`,
+          //   }))
+          // );
+        })
+        .catch((error) => {
+          console.log(error);
+          // setLoading(false);
+        });
+      // if (!showOptions) {
+      //   setShowOptions(true);
+      // }
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -221,13 +252,34 @@ const DetailPanel = ({
             );
           }}
         />
+
+{/* <input
+          type="search"
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          onFocus={() => setShowOptions(true)}
+          onKeyDown={handleNav}
+          className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+          placeholder="Search Customer"
+        /> */}
+
+        {/* <input
+          type="search"
+          onChange={(e) => handleChange(e.target.value)}
+          value=""
+          className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+          placeholder="Add Guest"
+        /> */}
+
+        {/* <AutoComplete onSelect={onChange} /> */}
+        
         <Controller
           control={control}
           name="note"
           render={({ field }) => (
             <div className="mb-3">
               <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Notes
+                Notes hello 
               </label>
               <textarea
                 {...field}
