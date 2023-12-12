@@ -11,13 +11,17 @@ interface Props extends EventWrapperProps<any> {
   children?: ReactElement<any, any> | undefined;
   onUpdateEvent: (event: EventType) => void;
   onDeleteConfirm: (eventId: string) => void;
+  onSelectEvent: (event: any) => void;
 }
 
 const EventWrapper = (props: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const data = props.event;
   const handleClick = () => {
-    setOpen(!open);
+    console.log('---data---', data);
+    props.onSelectEvent(data);
+
+    // setOpen(!open);
   };
   const customElement = (
     <div

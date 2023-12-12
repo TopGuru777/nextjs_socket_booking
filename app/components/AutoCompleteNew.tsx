@@ -178,7 +178,7 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
           type={"text"}
           style={inputStyle}
         />
-        <AutoCompleteIcon color={iconColor} isOpen={isComponentVisible}>
+        <AutoCompleteIcon color={iconColor}>
           {selected ? <FaTimes onClick={clearSelection} /> : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
         </AutoCompleteIcon>
       </div>

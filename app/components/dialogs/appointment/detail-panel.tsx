@@ -289,7 +289,7 @@ const DetailPanel = ({
 
         <AutoCompleteNew
           inputStyle={{ backgroundColor: "PaleTurquoise" }}
-          optionsStyle={{ backgroundColor: "LemonChiffon" }}
+          optionStyle={{ backgroundColor: "LemonChiffon" }}
           iconColor="Turquoise"
           data={customer}
           onAddNew={onAddGuest}

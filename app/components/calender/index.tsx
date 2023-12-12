@@ -14,6 +14,7 @@ import AppoinmentDialog from "../dialogs/appointment";
 import DeleteConfirmDialog from "../dialogs/delete-confirm";
 import { ServiceType, StatusType, EventType, ResourceType } from "@/app/types";
 import { updateBooking } from "@/app/services";
+import EventDialog from "../dialogs/event";
 
 interface Props {
   events: Array<EventType>;
@@ -51,6 +52,7 @@ const Calender = ({
   const asPath = useMemo(() => window.location.hash.slice(1).split("/"), []);
   const [calenderEvents, setCalenderEvents] =
     useState<Array<EventType>>(events);
+  const [isOpenEvent, setIsOpenEvent] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
@@ -59,6 +61,7 @@ const Calender = ({
     start: Date;
     end: Date;
   } | null>(null);
+  const [activeEvent, setActiveEvent] = useState<any>(null);
   const randomColor =
     randomColors[Math.floor(Math.random() * randomColors.length)];
 
@@ -144,12 +147,14 @@ const Calender = ({
         return item;
       });
     });
+    setIsOpenEvent(false);
   }, []);
 
   const handleDeleteEvent = useCallback(() => {
     setCalenderEvents((prev) => {
       return prev.filter((item) => item.id !== selectedEvent);
     });
+    setIsOpenEvent(false);
   }, [selectedEvent]);
 
   const slotPropGetter = useCallback(
@@ -162,11 +167,11 @@ const Calender = ({
       return {
         ...(moment(date).hour() > Number(startTime) &&
           moment(date).hour() < Number(endTime) && {
-            style: {
-              backgroundColor: "#eef0f2",
-              color: "black",
-            },
-          }),
+          style: {
+            backgroundColor: "#eef0f2",
+            color: "black",
+          },
+        }),
       };
     },
     [resources]
@@ -190,6 +195,16 @@ const Calender = ({
     }),
     []
   );
+
+  const selectEventHandler = (event: any) => {
+    setActiveEvent(event);
+    setIsOpenEvent(true);
+  }
+
+  const onCloseEvent = () => {
+    setIsOpenEvent(false);
+  }
+
   const defaultView = asPath[0] === "weekly" ? Views.WEEK : Views.DAY;
   return (
     <>
@@ -231,6 +246,7 @@ const Calender = ({
             services,
             onUpdateEvent: handleUpdateEvent,
             onDeleteConfirm: handleDeleteConfirm,
+            onSelectEvent: selectEventHandler,
           }),
         }}
       />
@@ -249,6 +265,15 @@ const Calender = ({
         selectedEvent={selectedEvent}
         onDelete={handleDeleteEvent}
         onClose={handleDeleteConfirm}
+      />
+      <EventDialog
+        open={isOpenEvent}
+        event={activeEvent}
+        status={status}
+        services={services}
+        onUpdateEvent={handleUpdateEvent}
+        onDeleteConfirm={handleDeleteConfirm}
+        onClose={onCloseEvent}
       />
     </>
   );

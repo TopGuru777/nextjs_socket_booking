@@ -8,21 +8,23 @@ interface Props {
   services: ServiceType[];
   onUpdateEvent: (event: EventType) => void;
   onDeleteConfirm: (eventId: string) => void;
+  onSelectEvent: (event: any) => void;
 }
 
 const EventWrapperContainer =
-  ({ status, services, onUpdateEvent, onDeleteConfirm }: Props) =>
-  (props: EventWrapperProps) => {
-    return (
-      <EventWrapper
-        {...props}
-        status={status}
-        services={services}
-        onUpdateEvent={onUpdateEvent}
-        onDeleteConfirm={onDeleteConfirm}
-      />
-    );
-  };
+  ({ status, services, onUpdateEvent, onDeleteConfirm, onSelectEvent }: Props) =>
+    (props: EventWrapperProps) => {
+      return (
+        <EventWrapper
+          {...props}
+          status={status}
+          services={services}
+          onUpdateEvent={onUpdateEvent}
+          onDeleteConfirm={onDeleteConfirm}
+          onSelectEvent={onSelectEvent}
+        />
+      );
+    };
 
 EventWrapperContainer.displayName = "EventWrapperContainer";
 

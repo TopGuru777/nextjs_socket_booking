@@ -113,22 +113,50 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent }: Props) => {
           rules={{
             required: true,
           }}
-          render={({ field: { onChange, value } }) => (
-            <div className="mb-3">
-              <label
-                htmlFor="service"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Service
-              </label>
-              <SelectDropdown
-                placeholder="Select a Service"
-                options={serviceOptions}
-                selected={value as string}
-                onChange={(selected) => onChange(selected.value)}
-              />
-            </div>
-          )}
+          render={({ field: { onChange, value } }) => {
+            const selectedService = services.find(
+              (service: ServiceType) => service.uuid === value
+            );
+            if (selectedService) {
+              const endTime = moment(watch("startTime"))
+                .add(Number(selectedService?.duration), "minutes")
+                .valueOf();
+              setValue("endTime", endTime as number);
+            }
+            return (
+              <div className="mb-3">
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Service
+                </label>
+                <SelectDropdown
+                  placeholder="Select a Service"
+                  options={serviceOptions}
+                  selected={value || ""}
+                  onChange={(selected) => onChange(selected.value)}
+                />
+                {selectedService && (
+                  <div className="flex justify-between mt-1">
+                    <div className="flex">
+                      <p className="text-sm font-medium text-gray-900 mr-1">
+                        Cost:
+                      </p>
+                      <p className="text-sm font-normal text-gray-900">
+                        ${selectedService.cost}
+                      </p>
+                    </div>
+                    <div className="flex">
+                      <p className="text-sm font-medium text-gray-900 mr-1">
+                        Duration:
+                      </p>
+                      <p className="text-sm font-normal text-gray-900">
+                        {selectedService.duration}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }}
         />
         <Controller
           control={control}
@@ -229,8 +257,8 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent }: Props) => {
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Customer
               </label>
-              
-              <AutoComplete onSelect={onChange} />
+
+              <AutoComplete onSelect={onChange} selectedValue={value} />
             </div>
           )}
         />

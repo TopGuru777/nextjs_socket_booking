@@ -1,5 +1,6 @@
 import React from "react";
 import { Manager, Reference, Popper as DefaultPopper } from "react-popper";
+import Draggable, { DraggableEventHandler } from "react-draggable";
 
 interface Props {
   hidePopper: boolean;
@@ -9,8 +10,22 @@ interface Props {
 
 const Popper = ({ hidePopper, targetComponent, popperComponent }: Props) => {
   let popper;
+
+  const onStart: DraggableEventHandler = (e) => {
+    /*
+    if ('touches' in e) {
+      e.stopPropagation();
+    } else if ('stopPropagation' in e) {
+      e.stopPropagation();
+    }
+    */
+    console.log("--->>Wid<<-----");
+    e.preventDefault();
+  }
+
   if (!hidePopper) {
     popper = (
+      // <Draggable onStart={onStart}>
       <DefaultPopper placement="right-start">
         {({ ref, style, placement, arrowProps }: any) => (
           <div
@@ -26,6 +41,7 @@ const Popper = ({ hidePopper, targetComponent, popperComponent }: Props) => {
           </div>
         )}
       </DefaultPopper>
+      // </Draggable>
     );
   }
 

@@ -99,7 +99,7 @@ const Event = ({
   }, []);
   console.log(event, "eventevent");
   return (
-    <div className="w-[432px] bg-white text-black shadow-3xl rounded border border-gray-200">
+    <div className="w-full bg-white text-black shadow-3xl rounded border border-gray-200">
       {/* <div className="event-triangle" {...props.arrowProps} /> */}
       <div className="pt-5 pr-4 pl-6 pb-1 relative">
         <div className="flex items-center justify-between pr-3">

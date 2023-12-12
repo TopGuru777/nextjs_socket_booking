@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { CustomerType, OptionType } from "@/app/types";
 import { searchCustomer } from "@/app/services";
+import { FaEdit, FaTimes } from "react-icons/fa";
 
 interface Props {
   selectedValue?: string;
@@ -15,16 +16,19 @@ const AutoComplete = ({ selectedValue, onSelect }: Props) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const [value, setValue] = useState<string>(selectedValue || "");
   const [cursor, setCursor] = useState<number>(-1);
+  const [selected, setSelected] = useState<boolean>(true);
 
   const handleSelect = (option: CustomerType) => {
     onSelect && onSelect(option);
     setValue(option?.name as string);
     setShowOptions(false);
+    setSelected(true);
   };
 
   const handleChange = async (text: string) => {
     setValue(text);
     setCursor(-1);
+    setSelected(false);
     if (text.trim().length > 2) {
       setLoading(true);
       searchCustomer(text)
@@ -47,6 +51,12 @@ const AutoComplete = ({ selectedValue, onSelect }: Props) => {
       }
     }
   };
+
+  const clearSelection = async () => {
+    setValue("");
+    setCursor(-1);
+    setSelected(false);
+  }
 
   const moveCursorDown = () => {
     if (cursor < filteredOptions.length - 1) {
@@ -86,7 +96,7 @@ const AutoComplete = ({ selectedValue, onSelect }: Props) => {
     <div className="relative w-full" ref={elementRef}>
       <div className="relative">
         <input
-          type="search"
+          type="text"
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => setShowOptions(true)}
@@ -94,14 +104,13 @@ const AutoComplete = ({ selectedValue, onSelect }: Props) => {
           className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
           placeholder="Search Customer"
         />
-        <div className="absolute inset-y-0 right-3 flex items-center pl-3 pointer-events-none">
-          <MagnifyingGlassIcon className="h-4 w-4 text-gray-600" />
+        <div className="absolute inset-y-0 right-3 flex items-center pl-3">
+          {selected ? (<><FaEdit /> <FaTimes onClick={clearSelection} /></>) : <MagnifyingGlassIcon className="h-4 w-4 text-gray-600" />}
         </div>
       </div>
       <ul
-        className={`absolute w-full max-h-64 overflow-auto mt-2 bg-white rounded-lg shadow-lg ${
-          !showOptions && "hidden"
-        } select-none`}
+        className={`absolute w-full max-h-64 overflow-auto mt-2 bg-white rounded-lg shadow-lg ${!showOptions && "hidden"
+          } select-none`}
       >
         {filteredOptions.map((option: any) => {
           return (
