@@ -3,13 +3,14 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface Props {
   onSubmit: (values: any) => void;
-  onClose: () => void;
+  // onClose: () => void;
 }
 
-const CustomerForm = ({ onSubmit, onClose }: Props) => {
+const CustomerForm = ({ onSubmit }: Props) => {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { isValid },
   } = useForm({
     defaultValues: {
@@ -19,12 +20,13 @@ const CustomerForm = ({ onSubmit, onClose }: Props) => {
       email: "",
     },
   });
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="relative p-4 text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed border-t border-t-blue-gray-100 border-b border-b-blue-gray-100">
-        <button type="button" className="absolute right-3" onClick={onClose}>
+        {/* <button type="button" className="absolute right-3" onClick={onClose}>
           <XMarkIcon className="h-4 w-4" />
-        </button>
+        </button> */}
         <Controller
           control={control}
           name="first_name"
@@ -120,7 +122,7 @@ const CustomerForm = ({ onSubmit, onClose }: Props) => {
           className="inline-flex justify-center bg-blue-100 px-8 py-2 text-sm font-medium hover:bg-blue-200"
           disabled={!isValid}
         >
-          Save Appointment
+          Add Customer
         </button>
       </div>
     </form>

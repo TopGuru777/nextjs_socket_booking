@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FocusEvent, FC, useState } from 'react';
 import styled from "styled-components";
 // import { FaArrowDown } from "@react-icons/all-files/fa/FaArrowDown";
-import { FaArrowDown } from 'react-icons/fa';
+import { FaArrowDown, FaPlus, FaTimes } from 'react-icons/fa';
 const AUTH_TOKEN = process.env.NEXT_PUBLIC_AUTH_TOKEN!;
 const BASE_API = process.env.NEXT_PUBLIC_BASE_API;
 import {
@@ -32,23 +32,29 @@ interface AutoCompleteNewProps {
   iconColor?: string;
   inputStyle?: React.CSSProperties;
   optionStyle?: React.CSSProperties;
-  data: string[];
+  data: any;
+  onAddNew: () => void;
+  onSetValue: (values: any) => void;
+  saveValues: () => void;
 }
 
 export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
   iconColor,
   inputStyle,
   optionStyle,
-  data
-
+  data,
+  onAddNew,
+  onSetValue,
+  saveValues
 }) => {
   const [search, setSearch] = useState({
-    text: "",
+    text: data.first_name || "",
     suggestions: []
   });
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState(false);
 
-  const [isComponentVisible, setIsComponentVisible] = useState(true);
+  const [isComponentVisible, setIsComponentVisible] = useState(false);
 
   const onInputFocus = (e: FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -60,6 +66,7 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
   const onTextChanged = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     let suggestions = [] as any;
+    setSelected(false);
     if (value.length >= 3 && areAllCharactersDigits(value)) {
       fetchUser(value);
     } else {
@@ -82,14 +89,18 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
   }
 
 
-  const suggestionSelected = (value: IUser) => {
+  const suggestionSelected = (value: any) => {
     // console.log(value.first_name, 'Niroj ')
     setIsComponentVisible(false);
+
+    onSetValue(value);
 
     setSearch({
       text: value.first_name,
       suggestions: []
     });
+
+    setSelected(true);
   };
   // console.log(search);
 
@@ -120,6 +131,27 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
 
   const { suggestions } = search;
 
+  const onNewHandler = () => {
+    saveValues();
+    onAddNew();
+  }
+
+  const clearSelection = () => {
+    onSetValue({
+      email: "",
+      first_name: "",
+      last_name: "",
+      phone: "",
+      nid: "",
+      uuid: ""
+    });
+    setSearch({
+      text: "",
+      suggestions: []
+    });
+    setSelected(false);
+  }
+
   return (
     <Root>
       <div
@@ -147,7 +179,7 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
           style={inputStyle}
         />
         <AutoCompleteIcon color={iconColor} isOpen={isComponentVisible}>
-          {loading ? <SpinningFaSpinner /> : <FaArrowDown />}
+          {selected ? <FaTimes onClick={clearSelection} /> : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
         </AutoCompleteIcon>
       </div>
       {
@@ -165,6 +197,19 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
                 </AutoCompleteItem>
               ))
             }
+          </AutoCompleteContainer>
+        )
+      }
+      {
+        suggestions.length == 0 && isComponentVisible && (
+          <AutoCompleteContainer style={optionStyle}>
+            <AutoCompleteItem>
+              <AutoCompleteItemButton
+                onClick={onNewHandler}
+              >
+                <FaPlus className="inline-block" /> Add Guest
+              </AutoCompleteItemButton>
+            </AutoCompleteItem>
           </AutoCompleteContainer>
         )
       }

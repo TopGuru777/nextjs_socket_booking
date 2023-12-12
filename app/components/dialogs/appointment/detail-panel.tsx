@@ -17,7 +17,12 @@ interface Props {
   status: Array<StatusType>;
   providers: { label: string; value: string }[];
   services: ServiceType[];
+  data: any;
+  customer: any;
   onSubmit: (values: any) => void;
+  onAddGuest: () => void;
+  saveValues: (values: any) => void;
+  onSetCustomer: (values: any) => void;
 }
 
 const DetailPanel = ({
@@ -27,7 +32,13 @@ const DetailPanel = ({
   status,
   services,
   onSubmit,
+  onAddGuest,
+  saveValues,
+  onSetCustomer,
+  data,
+  customer
 }: Props) => {
+  console.log('----->>data>>----', data);
   const {
     control,
     handleSubmit,
@@ -36,13 +47,13 @@ const DetailPanel = ({
     formState: { isValid },
   } = useForm({
     defaultValues: {
-      resourceId: resourceId,
-      service: "",
-      startDate: startEvent,
-      startTime: moment(startEvent).valueOf(),
-      endTime: moment(startEvent).valueOf(),
-      note: "",
-      status: null,
+      resourceId: data.resourceId || resourceId,
+      service: data.service || "",
+      startDate: data.startEvent || startEvent,
+      startTime: data.startTime || moment(startEvent).valueOf(),
+      endTime: data.endTime || moment(startEvent).valueOf(),
+      note: data.note || "",
+      status: data.status || null,
     },
   });
   const statusOptions = status.map((value) => ({
@@ -53,7 +64,7 @@ const DetailPanel = ({
     label: service.title,
     value: service.uuid,
   }));
-  
+
 
   const handleChange = async (text: string) => {
     // setValue(text);
@@ -256,7 +267,7 @@ const DetailPanel = ({
           }}
         />
 
-{/* <input
+        {/* <input
           type="search"
           value={value}
           onChange={(e) => handleChange(e.target.value)}
@@ -275,12 +286,15 @@ const DetailPanel = ({
         /> */}
 
         {/* <AutoComplete onSelect={onChange} /> */}
-        
+
         <AutoCompleteNew
           inputStyle={{ backgroundColor: "PaleTurquoise" }}
           optionsStyle={{ backgroundColor: "LemonChiffon" }}
-          data={data}
           iconColor="Turquoise"
+          data={customer}
+          onAddNew={onAddGuest}
+          onSetValue={onSetCustomer}
+          saveValues={() => saveValues(watch())}
         >
         </AutoCompleteNew>
         <Controller
@@ -289,7 +303,7 @@ const DetailPanel = ({
           render={({ field }) => (
             <div className="mb-3">
               <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Notes hello 
+                Notes hello
               </label>
               <textarea
                 {...field}
@@ -306,7 +320,7 @@ const DetailPanel = ({
           className="inline-flex justify-center bg-blue-100 px-8 py-2 text-sm font-medium hover:bg-blue-200"
           disabled={!isValid}
         >
-          Continue
+          Create Appointment
         </button>
       </div>
     </form>
