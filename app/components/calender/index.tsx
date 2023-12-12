@@ -94,6 +94,7 @@ const Calender = ({
       resourceId,
       isAllDay: droppedOnAllDaySlot = false,
     }: any) => {
+      // const names = name.split(" ");
       const { allDay } = event;
       if (!allDay && droppedOnAllDaySlot) {
         event.allDay = true;
@@ -113,7 +114,7 @@ const Calender = ({
             field_date_range: {
               value: moment(start).format(),
               end_value: moment(end).format(),
-            },
+            }
           },
           relationships: {
             field_staff: {

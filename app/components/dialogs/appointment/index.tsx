@@ -10,6 +10,7 @@ import { createBooking, createCustomer } from "@/app/services";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
 import CustomerForm from "./customer-form";
+import EditCustomerForm from "./edit-customer-form";
 
 interface Props {
   open: boolean;
@@ -54,121 +55,26 @@ const AppoinmentDialog = ({
     nid: "",
     uuid: ""
   });
-  const [newGuest, setNewGuest] = useState(false);
+  const [newGuest, setNewGuest] = useState<boolean>(false);
+  const [showEditCustomer, setEditCustomer] = useState<boolean>(false);
+
+  const handleEditCustomer = () => {
+    setEditCustomer(true);
+  }
+
+  const closeEditingCustomer = () => {
+    setEditCustomer(false);
+  }
+
+  const updateCustomer = (values: any) => {
+    setCustomer(values);
+    closeEditingCustomer();
+  }
 
   const handleChangeTab = (value: number) => {
     setSelectedIndex(value);
   };
-  /*
-    const handleSubmit1 = async (values: any, newCustomer?: boolean) => {
-      if (selectedIndex === 1) {
-        const selectedService = services.find(
-          (service) => service.uuid === formValues.service
-        );
-        const selectedStaff = resources.find(
-          (resource) => resource.resourceId === formValues.resourceId
-        );
-        const selectedStatus = status.find(
-          (value) => value.uuid === formValues.status
-        );
-        const name = `${values?.first_name} ${values?.last_name}`;
-        const startTime = moment(formValues.startTime).format();
-        const endTime = moment(formValues.endTime).format();
-        let relationships: any = {
-          field_service: {
-            data: [
-              {
-                type: "node--services",
-                id: formValues.service,
-              },
-            ],
-          },
-          field_staff: {
-            data: [
-              {
-                type: "node--staffs",
-                id: selectedStaff?.uuid,
-              },
-            ],
-          },
-        };
-        if (formValues.status) {
-          relationships = {
-            ...relationships,
-            field_status: {
-              data: [
-                {
-                  type: "taxonomy_term--status",
-                  id: formValues.status,
-                },
-              ],
-            },
-          };
-        }
-        if (values.id) {
-          relationships = {
-            ...relationships,
-            field_customer: {
-              data: [
-                {
-                  type: "node--customers",
-                  id: values.id,
-                },
-              ],
-            },
-          };
-        }
-        createBooking({
-          type: "node--booking",
-          attributes: {
-            title: values.name || name,
-            field_date_range: {
-              value: startTime,
-              end_value: endTime,
-              duration: Number(selectedService?.duration),
-              rrule: null,
-              rrule_index: null,
-              timezone: "UTC",
-            },
-          },
-          relationships,
-        }).then((response) => {
-          addEvent({
-            id: response.data.id,
-            start: moment(formValues.startTime).toDate(),
-            end: moment(formValues.endTime).toDate(),
-            resourceId: formValues.resourceId,
-            service: selectedService?.title,
-            cost: selectedService?.cost,
-            duration: selectedService?.duration,
-            title: values.name || name,
-            status: selectedStatus?.name,
-            name: values.name || name,
-            email: values.email,
-            phone: values.phone,
-          });
-          handleClose();
-        });
-        if (newCustomer) {
-          createCustomer({
-            type: "node--customers",
-            attributes: {
-              title: name,
-              field_first_name: values.first_name,
-              field_last_name: values.last_name,
-              field_email_address: values.email,
-              field_phone: values.phone,
-              body: null,
-            },
-          });
-        }
-      } else {
-        console.log("--------values---------", values);
-        setFormValues(values);
-        setSelectedIndex(1);
-      }
-    };
-  */
+
   const handleSubmit = async (values: any) => {
     const selectedService = services.find(
       (service) => service.uuid === values.service
@@ -344,7 +250,7 @@ const AppoinmentDialog = ({
               >
                 <Dialog.Panel className="w-full max-w-md transform bg-white text-left align-middle shadow-xl transition-all">
                   {
-                    !newGuest && (
+                    !showEditCustomer && !newGuest && (
                       <>
                         <Dialog.Title
                           as="div"
@@ -382,6 +288,7 @@ const AppoinmentDialog = ({
                             onSubmit={handleSubmit}
                             onAddGuest={() => setNewGuest(true)}
                             onSetCustomer={setCustomer}
+                            onEditCustomer={handleEditCustomer}
                           />
                         </div>
                       </>
@@ -403,6 +310,23 @@ const AppoinmentDialog = ({
                         <CustomerForm onSubmit={handleAddGuest} />
                       </>
                     )}
+                  {showEditCustomer && (
+                    <>
+                      <Dialog.Title
+                        as="div"
+                        className="flex justify-between handle items-center shrink-0 p-4 bg-gray-200 text-blue-gray-900 antialiased font-sans text-lg font-semibold leading-snug"
+                        style={{ cursor: "move" }}
+                        id="draggable-dialog-title"
+                      >
+                        Edit Guest
+                        <button onClick={closeEditingCustomer}>
+                          <XMarkIcon className="h-6 w-6" />
+                        </button>
+                      </Dialog.Title>
+
+                      <EditCustomerForm data={customer} onSubmit={updateCustomer} />
+                    </>
+                  )}
                 </Dialog.Panel>
               </Transition.Child>
             </div>

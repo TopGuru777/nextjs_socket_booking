@@ -12,9 +12,10 @@ interface Props {
   services: ServiceType[];
   onClose: () => void;
   onUpdateEvent: (event: EventType) => void;
+  editCustomer: (values: any) => void;
 }
 
-const EditEvent = ({ event, services, onClose, onUpdateEvent }: Props) => {
+const EditEvent = ({ event, services, onClose, onUpdateEvent, editCustomer }: Props) => {
   const serviceOptions = services.map((service: ServiceType) => ({
     label: service.title,
     value: service.uuid,
@@ -258,7 +259,7 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent }: Props) => {
                 Customer
               </label>
 
-              <AutoComplete onSelect={onChange} selectedValue={value} />
+              <AutoComplete onSelect={onChange} onEditCustomer={() => editCustomer(value)} selectedValue={value} />
             </div>
           )}
         />

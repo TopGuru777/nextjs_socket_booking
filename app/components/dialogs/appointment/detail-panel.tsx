@@ -23,6 +23,7 @@ interface Props {
   onAddGuest: () => void;
   saveValues: (values: any) => void;
   onSetCustomer: (values: any) => void;
+  onEditCustomer: () => void;
 }
 
 const DetailPanel = ({
@@ -35,6 +36,7 @@ const DetailPanel = ({
   onAddGuest,
   saveValues,
   onSetCustomer,
+  onEditCustomer,
   data,
   customer
 }: Props) => {
@@ -294,6 +296,7 @@ const DetailPanel = ({
           data={customer}
           onAddNew={onAddGuest}
           onSetValue={onSetCustomer}
+          onEditCustomer={onEditCustomer}
           saveValues={() => saveValues(watch())}
         >
         </AutoCompleteNew>

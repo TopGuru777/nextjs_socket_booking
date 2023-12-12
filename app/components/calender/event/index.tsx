@@ -8,6 +8,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
 import { updateBooking } from "@/app/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
+import EditCustomerForm from "../../dialogs/appointment/edit-customer-form";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {
@@ -27,6 +28,8 @@ const Event = ({
   onUpdateEvent,
   onDeleteConfirm,
 }: Props) => {
+  const [customer, setCustomer] = useState<any>(null);
+  const [showEditCustomer, setEditCustomer] = useState<boolean>(false);
   const [showEdit, setShowEdit] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>("");
   const statusOptions = useMemo(() => {
@@ -72,6 +75,23 @@ const Event = ({
   const handleEdit = useCallback(() => {
     setShowEdit(!showEdit);
   }, [showEdit]);
+
+  const handleEditCustomer = (data: any) => {
+    console.log('----customer---', data);
+    setCustomer(data);
+    setEditCustomer(true);
+    setShowEdit(false);
+  }
+
+  const closeEditingCustomer = () => {
+    setEditCustomer(false);
+    setShowEdit(true);
+  }
+
+  const updateCustomer = (values: any) => {
+    setCustomer(values);
+    closeEditingCustomer();
+  }
 
   useEffect(() => {
     if (!socket) {
@@ -119,21 +139,23 @@ const Event = ({
           <XMarkIcon className="h-4 w-4" />
         </button>
       </div>
-      {!showEdit && (
+      {!showEditCustomer && !showEdit && (
         <EventDetails
           event={event}
           onEdit={handleEdit}
           onDeleteConfirm={() => onDeleteConfirm(event.id)}
         />
       )}
-      {showEdit && (
+      {!showEditCustomer && showEdit && (
         <EditEvent
           event={event}
           services={services}
           onClose={onClose}
           onUpdateEvent={onUpdateEvent}
+          editCustomer={handleEditCustomer}
         />
       )}
+      {showEditCustomer && <EditCustomerForm data={customer} onSubmit={updateCustomer} />}
     </div>
   );
 };

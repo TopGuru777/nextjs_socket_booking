@@ -1,50 +1,131 @@
-import { useState } from "react";
-import AutoComplete from "@components/AutoComplete";
-import { CustomerType } from "@/app/types";
+import { useForm, Controller } from "react-hook-form";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface Props {
-    onSubmit: (values: CustomerType) => void;
-    onClick: () => void;
+    data: any;
+    onSubmit: (values: any) => void;
 }
 
-const EditCustomerForm = ({ onClick, onSubmit }: Props) => {
-    const [selected, setSelected] = useState<CustomerType | null>(null);
-
-    const handleSubmit = () => {
-        onSubmit(selected as CustomerType);
-        setSelected(null);
-    };
-
-    const handleSelect = (selectedValue: CustomerType) => {
-        setSelected(selectedValue);
-    };
+const EditCustomerForm = ({ data, onSubmit }: Props) => {
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: { isValid },
+    } = useForm({
+        defaultValues: {
+            first_name: data?.first_name ?? "",
+            last_name: data?.last_name ?? "",
+            phone: data?.phone ?? "",
+            email: data?.email ?? "",
+        },
+    });
 
     return (
-        <>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <div className="relative p-4 text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed border-t border-t-blue-gray-100 border-b border-b-blue-gray-100">
-                <AutoComplete onSelect={handleSelect} />
-                <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
-                <div className="flex items-center justify-center">
-                    <button
-                        type="button"
-                        className="inline-flex justify-center bg-gray-100 px-8 py-2 text-sm font-medium hover:bg-gray-200"
-                        onClick={onClick}
-                    >
-                        New Customer
-                    </button>
-                </div>
+                {/* <button type="button" className="absolute right-3" onClick={onClose}>
+          <XMarkIcon className="h-4 w-4" />
+        </button> */}
+                <Controller
+                    control={control}
+                    name="first_name"
+                    render={({ field }) => (
+                        <div className="mb-3">
+                            <label
+                                htmlFor="first_name"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                First Name
+                            </label>
+                            <input
+                                {...field}
+                                id="first_name"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter first name"
+                            />
+                        </div>
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="last_name"
+                    render={({ field }) => (
+                        <div className="mb-3">
+                            <label
+                                htmlFor="last_name"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                Last Name
+                            </label>
+                            <input
+                                {...field}
+                                id="last_name"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter last name"
+                            />
+                        </div>
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field }) => (
+                        <div className="mb-3">
+                            <label
+                                htmlFor="email"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                Email address
+                            </label>
+                            <input
+                                {...field}
+                                type="email"
+                                id="email"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter email"
+                            />
+                        </div>
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="phone"
+                    rules={{
+                        minLength: 10,
+                        maxLength: 10,
+                    }}
+                    render={({ field }) => (
+                        <div>
+                            <label
+                                htmlFor="phone"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                Phone number
+                            </label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                {...field}
+                                maxLength={10}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="123-45-678"
+                                required
+                            />
+                        </div>
+                    )}
+                />
             </div>
             <div className="flex items-center justify-start shrink-0 flex-wrap p-4 text-blue-gray-500">
                 <button
-                    type="button"
+                    type="submit"
                     className="inline-flex justify-center bg-blue-100 px-8 py-2 text-sm font-medium hover:bg-blue-200"
-                    onClick={handleSubmit}
-                    disabled={!selected}
+                    disabled={!isValid}
                 >
-                    Save Appointment
+                    Save
                 </button>
             </div>
-        </>
+        </form>
     );
 };
 

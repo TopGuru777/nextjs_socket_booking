@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FocusEvent, FC, useState } from 'react';
 import styled from "styled-components";
 // import { FaArrowDown } from "@react-icons/all-files/fa/FaArrowDown";
-import { FaArrowDown, FaPlus, FaTimes } from 'react-icons/fa';
+import { FaArrowDown, FaEdit, FaPlus, FaTimes } from 'react-icons/fa';
 const AUTH_TOKEN = process.env.NEXT_PUBLIC_AUTH_TOKEN!;
 const BASE_API = process.env.NEXT_PUBLIC_BASE_API;
 import {
@@ -35,6 +35,7 @@ interface AutoCompleteNewProps {
   data: any;
   onAddNew: () => void;
   onSetValue: (values: any) => void;
+  onEditCustomer: () => void;
   saveValues: () => void;
 }
 
@@ -45,6 +46,7 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
   data,
   onAddNew,
   onSetValue,
+  onEditCustomer,
   saveValues
 }) => {
   const [search, setSearch] = useState({
@@ -179,7 +181,7 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
           style={inputStyle}
         />
         <AutoCompleteIcon color={iconColor}>
-          {selected ? <FaTimes onClick={clearSelection} /> : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
+          {selected ? (<><FaEdit onClick={onEditCustomer} /> <FaTimes onClick={clearSelection} /></>) : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
         </AutoCompleteIcon>
       </div>
       {

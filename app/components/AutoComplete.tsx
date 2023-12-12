@@ -7,9 +7,10 @@ import { FaEdit, FaTimes } from "react-icons/fa";
 interface Props {
   selectedValue?: string;
   onSelect: (option: CustomerType) => void;
+  onEditCustomer: () => void;
 }
 
-const AutoComplete = ({ selectedValue, onSelect }: Props) => {
+const AutoComplete = ({ selectedValue, onSelect, onEditCustomer }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<CustomerType[]>([]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
@@ -105,7 +106,7 @@ const AutoComplete = ({ selectedValue, onSelect }: Props) => {
           placeholder="Search Customer"
         />
         <div className="absolute inset-y-0 right-3 flex items-center pl-3">
-          {selected ? (<><FaEdit /> <FaTimes onClick={clearSelection} /></>) : <MagnifyingGlassIcon className="h-4 w-4 text-gray-600" />}
+          {selected ? (<><FaEdit onClick={() => onEditCustomer()} /> <FaTimes onClick={clearSelection} /></>) : <MagnifyingGlassIcon className="h-4 w-4 text-gray-600" />}
         </div>
       </div>
       <ul
