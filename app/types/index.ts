@@ -10,6 +10,7 @@ export interface BookingType {
   staff_id: string;
   status: string;
   uuid: string;
+  customer_uuid: string;
 }
 
 export interface StaffType {
@@ -55,6 +56,7 @@ export interface StatusType {
 
 export interface EventType {
   id: string;
+  customer_id: string;
   title: string;
   start: Date;
   end: Date;
@@ -66,6 +68,8 @@ export interface EventType {
   phone: string;
   duration: string;
   email: string;
+  customer_first_name: string;
+  customer_last_name: string;
 }
 
 export interface ResourceType {

@@ -57,9 +57,15 @@ const AppoinmentDialog = ({
   });
   const [newGuest, setNewGuest] = useState<boolean>(false);
   const [showEditCustomer, setEditCustomer] = useState<boolean>(false);
+  const [newPhone, setNewPhone] = useState<string>("");
 
   const handleEditCustomer = () => {
     setEditCustomer(true);
+  }
+
+  const handleSetAddGuest = (value: string) => {
+    setNewPhone(value);
+    setNewGuest(true);
   }
 
   const closeEditingCustomer = () => {
@@ -296,7 +302,7 @@ const AppoinmentDialog = ({
                             data={formValues}
                             customer={customer}
                             onSubmit={handleSubmit}
-                            onAddGuest={() => setNewGuest(true)}
+                            onAddGuest={handleSetAddGuest}
                             onSetCustomer={setCustomer}
                             onEditCustomer={handleEditCustomer}
                           />
@@ -317,7 +323,7 @@ const AppoinmentDialog = ({
                             <XMarkIcon className="h-6 w-6" />
                           </button>
                         </Dialog.Title>
-                        <CustomerForm onSubmit={handleAddGuest} />
+                        <CustomerForm onSubmit={handleAddGuest} phone={newPhone} />
                       </>
                     )}
                   {showEditCustomer && (

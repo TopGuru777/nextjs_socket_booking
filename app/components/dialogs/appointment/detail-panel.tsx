@@ -18,7 +18,7 @@ interface Props {
   data: any;
   customer: any;
   onSubmit: (values: any) => void;
-  onAddGuest: () => void;
+  onAddGuest: (value: string) => void;
   saveValues: (values: any) => void;
   onSetCustomer: (values: any) => void;
   onEditCustomer: () => void;

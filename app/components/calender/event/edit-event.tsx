@@ -14,7 +14,7 @@ interface Props {
   onClose: () => void;
   onUpdateEvent: (event: EventType) => void;
   editCustomer: (values: any) => void;
-  onNewCustomer: () => void;
+  onNewCustomer: (value: string) => void;
 }
 
 const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCustomer, onNewCustomer }: Props) => {

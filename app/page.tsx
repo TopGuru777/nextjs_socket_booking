@@ -26,6 +26,7 @@ const getEvents = (events: BookingType[]) => {
     const dateRange = booking.date_range.split(" - ");
     return {
       id: booking.uuid,
+      customer_id: booking.customer_uuid,
       service: booking.service_name,
       cost: booking.service_cost,
       duration: booking.service_duration,
@@ -37,6 +38,8 @@ const getEvents = (events: BookingType[]) => {
       end: new Date(dateRange[1]),
       resourceId: Number(booking.staff_id),
       status: booking.status,
+      customer_first_name: booking.customer_first_name,
+      customer_last_name: booking.customer_last_name
     };
   });
 };

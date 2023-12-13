@@ -7,7 +7,7 @@ import { EventType, ServiceType, StatusType } from "@/app/types";
 
 type Props = {
     open: boolean;
-    event: any,
+    event: EventType,
     status: StatusType[];
     services: ServiceType[];
     onUpdateEvent: (event: EventType) => void;

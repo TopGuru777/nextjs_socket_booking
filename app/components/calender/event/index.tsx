@@ -14,7 +14,7 @@ import CustomerForm from "../../dialogs/appointment/customer-form";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {
-  event: EventType;
+  event: EventType,
   status: StatusType[];
   services: ServiceType[];
   onClose: () => void;
@@ -33,12 +33,16 @@ const Event = ({
   const [customer, setCustomer] = useState<any>({
     name: event.name,
     email: event.email,
-    phone: event.phone
+    phone: event.phone,
+    first_name: event.customer_first_name,
+    last_name: event.customer_last_name,
+    uuid: event.customer_id
   });
   const [showEditCustomer, setEditCustomer] = useState<boolean>(false);
   const [showEdit, setShowEdit] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>("");
   const [newGuest, setNewGuest] = useState<boolean>(false);
+  const [phoneInput, setPhoneInput] = useState<string>("");
 
   const statusOptions = useMemo(() => {
     return status?.map((value: StatusType) => {
@@ -127,7 +131,8 @@ const Event = ({
     setShowEdit(true);
   }
 
-  const handleCreateCustomer = () => {
+  const handleCreateCustomer = (value: string) => {
+    setPhoneInput(value);
     setNewGuest(true);
     setShowEdit(false);
   }
@@ -235,7 +240,7 @@ const Event = ({
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </Dialog.Title>
-            <CustomerForm onSubmit={handleAddGuest} />
+            <CustomerForm onSubmit={handleAddGuest} phone={phoneInput} />
           </>
         )}
     </div>

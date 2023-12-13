@@ -36,7 +36,7 @@ interface AutoCompleteProps {
   inputStyle?: React.CSSProperties;
   optionStyle?: React.CSSProperties;
   data: any;
-  onAddNew: () => void;
+  onAddNew: (value: string) => void;
   onSetValue: (values: any) => void;
   onEditCustomer: () => void;
   saveValues: () => void;
@@ -52,13 +52,12 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
   onEditCustomer,
   saveValues
 }) => {
-  const [touched, setTouched] = useState<boolean>(false);
   const [search, setSearch] = useState({
     text: data.name || "",
     suggestions: []
   });
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(data.nid != "");
+  const [selected, setSelected] = useState(data.uuid != "");
 
   const [isComponentVisible, setIsComponentVisible] = useState(false);
 
@@ -108,7 +107,6 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
     });
 
     setSelected(true);
-    setTouched(true);
   };
   // console.log(search);
 
@@ -141,7 +139,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
 
   const onNewHandler = () => {
     saveValues();
-    onAddNew();
+    onAddNew(search.text);
   }
 
   const clearSelection = () => {
@@ -188,7 +186,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
           style={inputStyle}
         />
         <AutoCompleteIcon color={iconColor} className='cursor-pointer'>
-          {selected ? (<>{touched && <FaEdit onClick={onEditCustomer} />} <FaTimes onClick={clearSelection} /></>) : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
+          {selected ? (<><FaEdit onClick={onEditCustomer} /> <FaTimes onClick={clearSelection} /></>) : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
         </AutoCompleteIcon>
       </div>
       {

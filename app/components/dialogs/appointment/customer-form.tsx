@@ -2,11 +2,12 @@ import { useForm, Controller } from "react-hook-form";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface Props {
+  phone: string;
   onSubmit: (values: any) => void;
   // onClose: () => void;
 }
 
-const CustomerForm = ({ onSubmit }: Props) => {
+const CustomerForm = ({ phone, onSubmit }: Props) => {
   const {
     control,
     handleSubmit,
@@ -16,13 +17,23 @@ const CustomerForm = ({ onSubmit }: Props) => {
     defaultValues: {
       first_name: "",
       last_name: "",
-      phone: "",
+      phone: phone,
       email: "",
     },
   });
 
+  const handleCustomerDataSubmit = (values: any) => {
+    const trimmedValues: any = {};
+
+    for (const [key, value] of Object.entries(values)) {
+      trimmedValues[key] = typeof value === 'string' ? value.trim() : value;
+    }
+
+    onSubmit(trimmedValues);
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(handleCustomerDataSubmit)}>
       <div className="relative p-4 text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed border-t border-t-blue-gray-100 border-b border-b-blue-gray-100">
         {/* <button type="button" className="absolute right-3" onClick={onClose}>
           <XMarkIcon className="h-4 w-4" />
