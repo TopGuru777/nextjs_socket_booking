@@ -21,7 +21,7 @@ const CustomerPanel = ({ onSubmit }: Props) => {
       )}
       {showNewCustomer && (
         <CustomerForm
-          onClose={handleClick}
+          // onClose={handleClick}
           onSubmit={(values) => onSubmit(values, true)}
         />
       )}
