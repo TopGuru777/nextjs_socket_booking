@@ -1,11 +1,11 @@
 import moment from "moment";
 import { useForm, Controller } from "react-hook-form";
-import AutoComplete from "@components/AutoComplete";
 import SelectDropdown from "@components/SelectDropdown";
 import SelectDateDropdown from "@/app/components/select-date";
 import { EventType, ServiceType } from "@/app/types";
 import { updateBooking } from "@/app/services";
 import SelectTimeDropdown from "@/app/components/select-time";
+import { AutoComplete } from "../../custom-inputs/autocomplete";
 
 interface Props {
   event: EventType;
@@ -14,9 +14,10 @@ interface Props {
   onClose: () => void;
   onUpdateEvent: (event: EventType) => void;
   editCustomer: (values: any) => void;
+  onNewCustomer: () => void;
 }
 
-const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCustomer }: Props) => {
+const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCustomer, onNewCustomer }: Props) => {
   // console.log(event);
 
   const serviceOptions = services.map((service: ServiceType) => ({
@@ -37,7 +38,7 @@ const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCust
     defaultValues: {
       service: selectedService?.value,
       eventDate: event.start,
-      customer: customer.name,
+      customer: customer,
       startTime: moment(event.start).valueOf(),
       endTime: moment(event.end).valueOf(),
     },
@@ -263,8 +264,17 @@ const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCust
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Customer
               </label>
-
-              <AutoComplete onSelect={onChange} onEditCustomer={() => editCustomer(value)} selectedValue={value} />
+              <AutoComplete
+                inputStyle={{ backgroundColor: "PaleTurquoise" }}
+                optionStyle={{ backgroundColor: "LemonChiffon" }}
+                iconColor="Turquoise"
+                data={value}
+                onAddNew={onNewCustomer}
+                onSetValue={onChange}
+                onEditCustomer={() => editCustomer(value)}
+                saveValues={() => { }}
+              />
+              {/* <AutoComplete onSelect={onChange} onEditCustomer={() => editCustomer(value)} selectedValue={value} /> */}
             </div>
           )}
         />

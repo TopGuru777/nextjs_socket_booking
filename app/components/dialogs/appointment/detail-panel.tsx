@@ -5,10 +5,8 @@ import SelectDateDropdown from "@/app/components/select-date";
 import Dropdown from "@components/Dropdown";
 import { ServiceType, StatusType } from "@/app/types";
 import SelectTimeDropdown from "@/app/components/select-time";
-import AutoComplete from "../../AutoComplete";
 import { searchCustomer } from "@/app/services";
-import { AutoCompleteNew } from "../../AutoCompleteNew";
-import data from "../../data.json"
+import { AutoComplete } from "../../custom-inputs/autocomplete";
 // import { searchCustomer } from "@/app/services";
 
 interface Props {
@@ -289,7 +287,7 @@ const DetailPanel = ({
 
         {/* <AutoComplete onSelect={onChange} /> */}
 
-        <AutoCompleteNew
+        <AutoComplete
           inputStyle={{ backgroundColor: "PaleTurquoise" }}
           optionStyle={{ backgroundColor: "LemonChiffon" }}
           iconColor="Turquoise"
@@ -298,8 +296,7 @@ const DetailPanel = ({
           onSetValue={onSetCustomer}
           onEditCustomer={onEditCustomer}
           saveValues={() => saveValues(watch())}
-        >
-        </AutoCompleteNew>
+        />
         <Controller
           control={control}
           name="note"

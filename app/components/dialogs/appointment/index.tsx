@@ -194,6 +194,7 @@ const AppoinmentDialog = ({
     });
     const customerData = response.data.attributes
     setCustomer({
+      name: `${customerData.field_first_name} ${customerData.field_last_name}`,
       email: customerData.field_email_address,
       first_name: customerData.field_first_name,
       last_name: customerData.field_last_name,

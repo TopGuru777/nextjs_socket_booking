@@ -11,8 +11,9 @@ import {
   AutoCompleteItem,
   AutoCompleteItemButton,
   SpinningFaSpinner
-} from "./styles";
-import { areAllCharactersDigits } from '../utils/helper';
+} from "../../styles";
+import { areAllCharactersDigits } from '../../../utils/helper';
+
 const Root = styled.div`
   position: relative;
   width: 320px;
@@ -26,9 +27,11 @@ interface IUser {
   nid: number;
   first_name: string;
   last_name: string;
+  uuid: string;
+  email: string;
 }
 
-interface AutoCompleteNewProps {
+interface AutoCompleteProps {
   iconColor?: string;
   inputStyle?: React.CSSProperties;
   optionStyle?: React.CSSProperties;
@@ -39,7 +42,7 @@ interface AutoCompleteNewProps {
   saveValues: () => void;
 }
 
-export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
+export const AutoComplete: FC<AutoCompleteProps> = ({
   iconColor,
   inputStyle,
   optionStyle,
@@ -49,8 +52,9 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
   onEditCustomer,
   saveValues
 }) => {
+  const [touched, setTouched] = useState<boolean>(false);
   const [search, setSearch] = useState({
-    text: data.first_name || "",
+    text: data.name || "",
     suggestions: []
   });
   const [loading, setLoading] = useState(false);
@@ -95,14 +99,16 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
     // console.log(value.first_name, 'Niroj ')
     setIsComponentVisible(false);
 
+    value.name = `${value.first_name} ${value.last_name}`;
     onSetValue(value);
 
     setSearch({
-      text: value.first_name,
+      text: `${value.first_name} ${value.last_name}`,
       suggestions: []
     });
 
     setSelected(true);
+    setTouched(true);
   };
   // console.log(search);
 
@@ -145,7 +151,8 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
       last_name: "",
       phone: "",
       nid: "",
-      uuid: ""
+      uuid: "",
+      name: ""
     });
     setSearch({
       text: "",
@@ -180,8 +187,8 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
           type={"text"}
           style={inputStyle}
         />
-        <AutoCompleteIcon color={iconColor}>
-          {selected ? (<><FaEdit onClick={onEditCustomer} /> <FaTimes onClick={clearSelection} /></>) : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
+        <AutoCompleteIcon color={iconColor} className='cursor-pointer'>
+          {selected ? (<>{touched && <FaEdit onClick={onEditCustomer} />} <FaTimes onClick={clearSelection} /></>) : (loading ? <SpinningFaSpinner /> : <FaArrowDown />)}
         </AutoCompleteIcon>
       </div>
       {
