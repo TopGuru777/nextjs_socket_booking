@@ -9,13 +9,16 @@ import SelectTimeDropdown from "@/app/components/select-time";
 
 interface Props {
   event: EventType;
+  customer: any;
   services: ServiceType[];
   onClose: () => void;
   onUpdateEvent: (event: EventType) => void;
   editCustomer: (values: any) => void;
 }
 
-const EditEvent = ({ event, services, onClose, onUpdateEvent, editCustomer }: Props) => {
+const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCustomer }: Props) => {
+  // console.log(event);
+
   const serviceOptions = services.map((service: ServiceType) => ({
     label: service.title,
     value: service.uuid,
@@ -34,7 +37,7 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent, editCustomer }: Pr
     defaultValues: {
       service: selectedService?.value,
       eventDate: event.start,
-      customer: event.name,
+      customer: customer.name,
       startTime: moment(event.start).valueOf(),
       endTime: moment(event.end).valueOf(),
     },
@@ -51,10 +54,10 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent, editCustomer }: Pr
       service: selectedService?.title as string,
       start: moment(values.startTime).toDate(),
       end: moment(values.endTime).toDate(),
-      phone: values.customer.phone,
-      email: values.customer.email,
+      phone: values.customer.phone || customer.phone,
+      email: values.customer.email || customer.email,
     };
-    const title = values.customer.name;
+    const title = values.customer.name || customer.name;
     let relationships: any = {
       field_service: {
         data: [
@@ -74,19 +77,21 @@ const EditEvent = ({ event, services, onClose, onUpdateEvent, editCustomer }: Pr
     }
     onUpdateEvent && onUpdateEvent(data);
     onClose && onClose();
-    if (values.customer.id) {
+    if (values.customer.id || customer.id) {
+      console.log('----www-----', customer.id);
       relationships = {
         ...relationships,
         field_customer: {
           data: [
             {
               type: "node--customers",
-              id: values.customer.id,
+              id: values.customer.id || customer.id,
             },
           ],
         },
       };
     }
+    console.log('----update booking----', relationships);
     updateBooking({
       type: "node--booking",
       id: event.id,

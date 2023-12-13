@@ -6,7 +6,7 @@ import EventDetails from "./event-details";
 import { ServiceType, StatusType } from "@/app/types";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
-import { updateBooking } from "@/app/services";
+import { updateBooking, updateCustomer } from "@/app/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
 import EditCustomerForm from "../../dialogs/appointment/edit-customer-form";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
@@ -28,7 +28,11 @@ const Event = ({
   onUpdateEvent,
   onDeleteConfirm,
 }: Props) => {
-  const [customer, setCustomer] = useState<any>(null);
+  const [customer, setCustomer] = useState<any>({
+    name: event.name,
+    email: event.email,
+    phone: event.phone
+  });
   const [showEditCustomer, setEditCustomer] = useState<boolean>(false);
   const [showEdit, setShowEdit] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>("");
@@ -43,6 +47,7 @@ const Event = ({
       };
     });
   }, [status, event.status]);
+
 
   const handleSelect = useCallback(
     (value: string) => {
@@ -77,7 +82,6 @@ const Event = ({
   }, [showEdit]);
 
   const handleEditCustomer = (data: any) => {
-    console.log('----customer---', data);
     setCustomer(data);
     setEditCustomer(true);
     setShowEdit(false);
@@ -88,7 +92,24 @@ const Event = ({
     setShowEdit(true);
   }
 
-  const updateCustomer = (values: any) => {
+  const handleUpdateCustomer = async (values: any) => {
+
+    let customerData: any = {
+      type: "node--customers",
+      id: customer.uuid,
+      attributes: {
+        title: `${values.first_name} ${values.last_name}`,
+        field_email_address: values.email,
+        field_first_name: values.first_name,
+        field_last_name: values.last_name,
+        field_phone: values.phone
+      }
+    }
+    console.log('-----data----', customerData);
+    let response = await updateCustomer(customerData);
+    console.log('----response----', response);
+    values.name = `${values.first_name} ${values.last_name}`;
+    values.id = customer.uuid;
     setCustomer(values);
     closeEditingCustomer();
   }
@@ -151,11 +172,12 @@ const Event = ({
           event={event}
           services={services}
           onClose={onClose}
+          customer={customer}
           onUpdateEvent={onUpdateEvent}
           editCustomer={handleEditCustomer}
         />
       )}
-      {showEditCustomer && <EditCustomerForm data={customer} onSubmit={updateCustomer} />}
+      {showEditCustomer && <EditCustomerForm data={customer} onSubmit={handleUpdateCustomer} />}
     </div>
   );
 };

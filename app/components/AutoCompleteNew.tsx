@@ -54,7 +54,7 @@ export const AutoCompleteNew: FC<AutoCompleteNewProps> = ({
     suggestions: []
   });
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(false);
+  const [selected, setSelected] = useState(data.nid != "");
 
   const [isComponentVisible, setIsComponentVisible] = useState(false);
 

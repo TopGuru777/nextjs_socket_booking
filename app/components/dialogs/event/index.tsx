@@ -38,8 +38,8 @@ export default function EventDialog({
                 >
                     <div className="fixed inset-0 bg-black bg-opacity-25" />
                 </Transition.Child>
-                <Draggable axis="both">
-                    <div className="fixed inset-0">
+                <Draggable axis="both" cancel='textarea, input, select, button'>
+                    <div className="fixed inset-0 cursor-move">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                             <Transition.Child
                                 as={Fragment}

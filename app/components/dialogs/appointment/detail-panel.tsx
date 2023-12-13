@@ -306,7 +306,7 @@ const DetailPanel = ({
           render={({ field }) => (
             <div className="mb-3">
               <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Notes hello
+                Notes
               </label>
               <textarea
                 {...field}

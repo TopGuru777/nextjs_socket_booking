@@ -18,12 +18,14 @@ const AutoComplete = ({ selectedValue, onSelect, onEditCustomer }: Props) => {
   const [value, setValue] = useState<string>(selectedValue || "");
   const [cursor, setCursor] = useState<number>(-1);
   const [selected, setSelected] = useState<boolean>(true);
+  const [touched, setTouched] = useState<boolean>(false);
 
   const handleSelect = (option: CustomerType) => {
     onSelect && onSelect(option);
     setValue(option?.name as string);
     setShowOptions(false);
     setSelected(true);
+    setTouched(true);
   };
 
   const handleChange = async (text: string) => {
@@ -106,7 +108,7 @@ const AutoComplete = ({ selectedValue, onSelect, onEditCustomer }: Props) => {
           placeholder="Search Customer"
         />
         <div className="absolute inset-y-0 right-3 flex items-center pl-3">
-          {selected ? (<><FaEdit onClick={() => onEditCustomer()} /> <FaTimes onClick={clearSelection} /></>) : <MagnifyingGlassIcon className="h-4 w-4 text-gray-600" />}
+          {selected ? (<>{touched && (<FaEdit onClick={() => onEditCustomer()} />)}<FaTimes onClick={clearSelection} /></>) : <MagnifyingGlassIcon className="h-4 w-4 text-gray-600" />}
         </div>
       </div>
       <ul

@@ -117,6 +117,26 @@ export const createCustomer = async (data: any) => {
   }
 };
 
+export const updateCustomer = async (data: any) => {
+  try {
+    const response = await fetch(
+      `https://irislashinc.com/jsonapi/node/customers/${data.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/vnd.api+json",
+          Accept: "application/vnd.api+json",
+          Authorization: AUTH_TOKEN,
+        },
+        body: JSON.stringify({ data: data }),
+      }
+    );
+    return await response.json();
+  } catch (error) {
+    return error;
+  }
+};
+
 export const updateBooking = async (data: any) => {
   try {
     const response = await fetch(

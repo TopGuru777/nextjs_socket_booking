@@ -6,7 +6,7 @@ import DetailPanel from "./detail-panel";
 import CustomerPanel from "./customer-panel";
 import { ServiceType, StatusType } from "@/app/types";
 import moment from "moment";
-import { createBooking, createCustomer } from "@/app/services";
+import { createBooking, createCustomer, updateCustomer } from "@/app/services";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
 import CustomerForm from "./customer-form";
@@ -66,14 +66,24 @@ const AppoinmentDialog = ({
     setEditCustomer(false);
   }
 
-  const updateCustomer = (values: any) => {
+  const handleUpdateCustomer = async (values: any) => {
+    let customerData: any = {
+      type: "node--customers",
+      id: customer.uuid,
+      attributes: {
+        title: `${values.first_name} ${values.last_name}`,
+        field_email_address: values.email,
+        field_first_name: values.first_name,
+        field_last_name: values.last_name,
+        field_phone: values.phone
+      }
+    }
+    // console.log('-----data----', customerData);
+    let response = await updateCustomer(customerData);
+    // console.log('----response----', response);
     setCustomer(values);
     closeEditingCustomer();
   }
-
-  const handleChangeTab = (value: number) => {
-    setSelectedIndex(value);
-  };
 
   const handleSubmit = async (values: any) => {
     const selectedService = services.find(
@@ -170,7 +180,6 @@ const AppoinmentDialog = ({
   }
 
   const handleAddGuest = async (values: any) => {
-    console.log('><><');
     const name = `${values?.first_name} ${values?.last_name}`;
     const response = await createCustomer({
       type: "node--customers",
@@ -324,7 +333,7 @@ const AppoinmentDialog = ({
                         </button>
                       </Dialog.Title>
 
-                      <EditCustomerForm data={customer} onSubmit={updateCustomer} />
+                      <EditCustomerForm data={customer} onSubmit={handleUpdateCustomer} />
                     </>
                   )}
                 </Dialog.Panel>
