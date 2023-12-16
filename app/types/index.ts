@@ -8,6 +8,7 @@ export interface BookingType {
   customer_email: string;
   customer_phone: string;
   staff_id: string;
+  staff_title: string;
   status: string;
   uuid: string;
   customer_uuid: string;
@@ -64,6 +65,7 @@ export interface EventType {
   service: string;
   status: string;
   resourceId?: number;
+  staff_title: string;
   name: string;
   phone: string;
   duration: string;

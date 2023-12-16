@@ -6,6 +6,7 @@ import {
   getStatusList,
 } from "@/app/services";
 import dynamic from "next/dynamic";
+import mt from "moment-timezone";
 
 const BookingCalender = dynamic(() => import("@/app/components/calender"), {
   ssr: false,
@@ -24,6 +25,12 @@ const getStaff = (data: StaffType[]) => {
 const getEvents = (events: BookingType[]) => {
   return events?.map((booking: BookingType) => {
     const dateRange = booking.date_range.split(" - ");
+
+    /**
+     * convert to new local timezone
+     */
+    const start_date = mt.tz(dateRange[0]+"Z", "America/New_York").format();
+    const end_date = mt.tz(dateRange[1]+"Z", "America/New_York").format();
     return {
       id: booking.uuid,
       customer_id: booking.customer_uuid,
@@ -34,9 +41,10 @@ const getEvents = (events: BookingType[]) => {
       phone: booking.customer_phone,
       email: booking.customer_email,
       title: `${booking.customer_first_name} ${booking.customer_last_name}`,
-      start: new Date(dateRange[0]),
-      end: new Date(dateRange[1]),
+      start: new Date(start_date),
+      end: new Date(end_date),
       resourceId: Number(booking.staff_id),
+      staff_title: booking.staff_title,
       status: booking.status,
       customer_first_name: booking.customer_first_name,
       customer_last_name: booking.customer_last_name
@@ -49,6 +57,7 @@ export default async function Home() {
   const staffList = await getStaffList();
   const serviceData = await getServiceList();
   const bookingList = await getBookingList();
+
   const statusList = await getStatusList();
   const resources = getStaff(staffList);
   const events = getEvents(bookingList);

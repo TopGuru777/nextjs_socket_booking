@@ -128,7 +128,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
         // const regex = new RegExp(`^${text}`, "i");
         suggestions = json.sort();
         // suggestions = data.sort().filter((v: IData) => regex.test(v.name));
-        // console.log(suggestions);
+        console.log(suggestions);
         setLoading(false);
         setIsComponentVisible(true);
         setSearch({ suggestions, text: text });
@@ -199,7 +199,9 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
                     key={item.first_name}
                     onClick={() => suggestionSelected(item)}
                   >
-                    {item.first_name}
+                    <p> {item.first_name} demo {item.last_name} </p>
+                    <p>{item.email}</p>
+                   
                   </AutoCompleteItemButton>
                 </AutoCompleteItem>
               ))

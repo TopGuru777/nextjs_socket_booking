@@ -114,6 +114,9 @@ const Calender = ({
             field_date_range: {
               value: moment(start).format(),
               end_value: moment(end).format(),
+              rrule: null,
+              rrule_index: null,
+              timezone: "UTC",
             }
           },
           relationships: {

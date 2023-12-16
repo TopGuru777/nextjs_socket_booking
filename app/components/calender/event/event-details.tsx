@@ -57,7 +57,14 @@ const EventDetails = ({ event, onEdit, onDeleteConfirm }: Props) => {
             {event.phone}
           </h3>
         </div>
+        <div className="flex">
+          <h3 className="font-semibold text-sm font-sans ml-1">
+            {event.staff_title}
+          </h3>
+        </div>
       </div>
+
+
       <div className="flex h-[60px] pt-2 pb-5 pl-4 pr-4 w-full items-center justify-end">
         <button
           className="hover:bg-gray-200 h-8 font-normal text-sm font-sans text-indigo-950 rounded-3xl px-2"
