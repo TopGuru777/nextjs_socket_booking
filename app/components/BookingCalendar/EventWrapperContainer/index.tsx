@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import { type EventWrapperProps } from "react-big-calendar";
-import EventWrapper from "./event-wrapper";
+import EventWrapper from "./EventWrapper";
 import { EventType, ServiceType, StatusType } from "@/app/types";
 
 interface Props {

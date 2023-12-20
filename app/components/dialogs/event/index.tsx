@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { Dialog, Transition, Tab } from "@headlessui/react";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
-import Event from '../../calender/event';
+import Event from '../../BookingCalendar/Event';
 import { EventType, ServiceType, StatusType } from "@/app/types";
 
 type Props = {

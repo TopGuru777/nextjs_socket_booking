@@ -1,12 +1,12 @@
 import { useForm, Controller } from "react-hook-form";
 import moment from "moment";
-import SelectDropdown from "@components/SelectDropdown";
-import SelectDateDropdown from "@/app/components/select-date";
-import Dropdown from "@components/Dropdown";
+import SelectDropdown from "@/app/components/CustomInputs/SelectDropdown";
+import SelectDateDropdown from "@/app/components/CustomInputs/SelectDateDropdown";
+import Dropdown from "@/app/components/CustomInputs/DropDown";
 import { ServiceType, StatusType } from "@/app/types";
-import SelectTimeDropdown from "@/app/components/select-time";
+import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
 import { searchCustomer } from "@/app/services";
-import { AutoComplete } from "../../custom-inputs/autocomplete";
+import { AutoComplete } from "../../../CustomInputs/AutoComplete";
 // import { searchCustomer } from "@/app/services";
 
 interface Props {

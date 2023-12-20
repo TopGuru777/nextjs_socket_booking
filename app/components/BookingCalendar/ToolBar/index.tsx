@@ -1,9 +1,9 @@
 import { type ToolbarProps } from "react-big-calendar";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import DropDown from "../dropdown";
-import CustomDatePicker from "../datepicker";
+import DropDown from "../BookingOptionSelector";
+import CustomDatePicker from "../../CustomInputs/DatePicker";
 
-const Toolbar = ({label, date, view, onNavigate, onView }: ToolbarProps) => {
+const Toolbar = ({ label, date, view, onNavigate, onView }: ToolbarProps) => {
   return (
     <div className="grid grid-cols-3 gap-4 p-6">
       <DropDown date={date} view={view} onView={onView} />

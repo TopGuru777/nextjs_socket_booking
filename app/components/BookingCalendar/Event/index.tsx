@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import io, { Socket } from "socket.io-client";
-import Dropdown from "@components/Dropdown";
-import EditEvent from "./edit-event";
-import EventDetails from "./event-details";
+import Dropdown from "@/app/components/CustomInputs/DropDown";
+import EditEvent from "./EditEvent";
+import EventDetails from "./EventDetails";
 import { ServiceType, StatusType } from "@/app/types";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
 import { updateBooking, updateCustomer, createCustomer } from "@/app/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
-import EditCustomerForm from "../../dialogs/appointment/edit-customer-form";
+import EditCustomerForm from "../../Dialogs/Appointment/EditCustomerForm";
 import { Dialog } from "@headlessui/react";
-import CustomerForm from "../../dialogs/appointment/customer-form";
+import CustomerForm from "../../Dialogs/Appointment/CustomerForm";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {

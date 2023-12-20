@@ -8,7 +8,7 @@ import {
 import dynamic from "next/dynamic";
 import mt from "moment-timezone";
 
-const BookingCalender = dynamic(() => import("@/app/components/calender"), {
+const BookingCalender = dynamic(() => import("@/app/components/BookingCalendar"), {
   ssr: false,
 });
 
@@ -29,8 +29,8 @@ const getEvents = (events: BookingType[]) => {
     /**
      * convert to new local timezone
      */
-    const start_date = mt.tz(dateRange[0]+"Z", "America/New_York").format();
-    const end_date = mt.tz(dateRange[1]+"Z", "America/New_York").format();
+    const start_date = mt.tz(dateRange[0] + "Z", "America/New_York").format();
+    const end_date = mt.tz(dateRange[1] + "Z", "America/New_York").format();
     return {
       id: booking.uuid,
       customer_id: booking.customer_uuid,

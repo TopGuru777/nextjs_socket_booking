@@ -28,7 +28,7 @@ const DeleteConfirmDialog = ({
 
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog onClose={() => {}} className="relative z-50">
+      <Dialog onClose={() => { }} className="relative z-50">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -56,7 +56,7 @@ const DeleteConfirmDialog = ({
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900 flex justify-between"
                 >
-                  Delete appointment for good?
+                  Delete Appointment for good?
                   <button onClick={handleClose}>
                     <XMarkIcon className="h-4 w-4" />
                   </button>

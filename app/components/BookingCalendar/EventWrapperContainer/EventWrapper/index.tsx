@@ -1,9 +1,9 @@
-import Popper from "@components/Popper";
+import Popper from "@/app/components/CustomInputs/Popper";
 import React, { PropsWithChildren, ReactElement, useState } from "react";
 import { type EventWrapperProps } from "react-big-calendar";
 import OutsideClickHandler from "react-outside-click-handler";
 import { EventType, ServiceType, StatusType } from "@/app/types";
-import Event from "../event";
+import Event from "../../Event";
 
 interface Props extends EventWrapperProps<any> {
   status: StatusType[];

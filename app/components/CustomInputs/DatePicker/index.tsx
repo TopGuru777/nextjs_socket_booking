@@ -1,6 +1,6 @@
 import { type NavigateAction } from "react-big-calendar";
 import DatePicker from "react-datepicker";
-import TextButton from "./date-button";
+import TextButton from "./DatePickerDateButton";
 
 interface Props {
   label: string;

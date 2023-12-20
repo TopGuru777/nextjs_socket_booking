@@ -1,16 +1,16 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition, Tab } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { ResourceType } from "@/app/components/calender/type";
-import DetailPanel from "./detail-panel";
-import CustomerPanel from "./customer-panel";
+import { ResourceType } from "@/app/components/BookingCalendar/type";
+import DetailPanel from "./DetailPanel";
+import CustomerPanel from "./CustomerPanel";
 import { ServiceType, StatusType } from "@/app/types";
 import moment from "moment";
 import { createBooking, createCustomer, updateCustomer } from "@/app/services";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
-import CustomerForm from "./customer-form";
-import EditCustomerForm from "./edit-customer-form";
+import CustomerForm from "./CustomerForm";
+import EditCustomerForm from "./EditCustomerForm";
 
 interface Props {
   open: boolean;

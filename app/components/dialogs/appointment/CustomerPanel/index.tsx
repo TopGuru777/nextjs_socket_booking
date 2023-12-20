@@ -1,6 +1,6 @@
 import { useState } from "react";
-import AddCustomerForm from "./add-customer-form";
-import CustomerForm from "./customer-form";
+import AddCustomerForm from "../AddCustomerForm";
+import CustomerForm from "../CustomerForm";
 import { CustomerType } from "@/app/types";
 
 interface Props {

@@ -8,13 +8,13 @@ import {
 } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
-import Toolbar from "./toolbar";
-import EventWrapperContainer from "./event-wrapper";
-import AppoinmentDialog from "../dialogs/appointment";
-import DeleteConfirmDialog from "../dialogs/delete-confirm";
+import Toolbar from "./ToolBar";
+import EventWrapperContainer from "./EventWrapperContainer";
+import AppoinmentDialog from "../Dialogs/Appointment";
+import DeleteConfirmDialog from "../Dialogs/DeleteConfirm";
 import { ServiceType, StatusType, EventType, ResourceType } from "@/app/types";
 import { updateBooking } from "@/app/services";
-import EventDialog from "../dialogs/event";
+import EventDialog from "../Dialogs/Event";
 
 interface Props {
   events: Array<EventType>;
