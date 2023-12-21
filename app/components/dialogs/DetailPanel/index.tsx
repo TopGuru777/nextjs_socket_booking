@@ -6,7 +6,7 @@ import Dropdown from "@/app/components/CustomInputs/DropDown";
 import { ServiceType, StatusType } from "@/app/types";
 import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
 import { searchCustomer } from "@/app/services";
-import { AutoComplete } from "../../../CustomInputs/AutoComplete";
+import { AutoComplete } from "../../CustomInputs/AutoComplete";
 // import { searchCustomer } from "@/app/services";
 
 interface Props {

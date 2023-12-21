@@ -8,9 +8,9 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
 import { updateBooking, updateCustomer, createCustomer } from "@/app/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
-import EditCustomerForm from "../../Dialogs/Appointment/EditCustomerForm";
+import EditCustomerForm from "../../Dialogs/EditCustomerForm";
 import { Dialog } from "@headlessui/react";
-import CustomerForm from "../../Dialogs/Appointment/CustomerForm";
+import CustomerForm from "../../Dialogs/CustomerForm";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {
