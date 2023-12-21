@@ -4,7 +4,7 @@ import { createRxDatabase, addRxPlugin } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBJsonDumpPlugin } from 'rxdb/plugins/json-dump';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
-import { HumanSchema } from './schemas/testschema';
+import { HumanSchema } from './schemas/TestSchema';
 
 // Install the necessary plugins
 addRxPlugin(RxDBDevModePlugin);
