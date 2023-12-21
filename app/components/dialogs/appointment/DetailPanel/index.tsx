@@ -38,7 +38,6 @@ const DetailPanel = ({
   data,
   customer
 }: Props) => {
-  console.log('----->>data>>----', data);
   const {
     control,
     handleSubmit,

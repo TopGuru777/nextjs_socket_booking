@@ -29,7 +29,7 @@ export const getBookingList = async () => {
     const max_date = moment(`${current_local_date}T24:00`).tz("UTC").format("YYYYMMDDHHSS")
 
     const booking_api_url = `${BASE_API}/booking?field_date_range_value[min]=${min_date}&field_date_range_value[max]=${max_date}`;
-    console.log(booking_api_url);
+    console.log('---->>booking api url<<----', booking_api_url);
     const response = await fetch(booking_api_url, {
       cache: "no-cache",
       headers: {
@@ -38,6 +38,7 @@ export const getBookingList = async () => {
       },
     });
     const responseData = await response.json();
+    console.log('---->>>bookinglist<<<----', responseData);
     return responseData.hasOwnProperty("content") ? [] : responseData;
   } catch (error) {
     return error;
@@ -53,6 +54,7 @@ export const getStaffList = async () => {
       },
     });
     const responseData = await response.json();
+    console.log('---->>>staff<<<----', responseData);
     return responseData.hasOwnProperty("content") ? [] : responseData;
   } catch (error) {
     return error;
@@ -68,6 +70,7 @@ export const getServiceList = async () => {
       },
     });
     const responseData = await response.json();
+    console.log('---->>>servicelist<<<----', responseData);
     return responseData.hasOwnProperty("content") ? [] : responseData;
   } catch (error) {
     return error;
@@ -83,6 +86,7 @@ export const getCustomerList = async () => {
       },
     });
     const responseData = await response.json();
+    console.log('---->>>customerlist<<<----', responseData);
     return responseData.hasOwnProperty("content") ? [] : responseData;
   } catch (error) {
     return error;
@@ -98,6 +102,7 @@ export const getStatusList = async () => {
       },
     });
     const responseData = await response.json();
+    console.log('---->>>status<<<----', responseData);
     return responseData.hasOwnProperty("content") ? [] : responseData;
   } catch (error) {
     return error;

@@ -1,3 +1,5 @@
+"use client"
+
 import { BookingType, ServiceType, StaffType } from "@/app/types";
 import {
   getBookingList,
@@ -7,6 +9,7 @@ import {
 } from "@/app/services";
 import dynamic from "next/dynamic";
 import mt from "moment-timezone";
+import { RxDBProvider } from "./db";
 
 const BookingCalender = dynamic(() => import("@/app/components/BookingCalendar"), {
   ssr: false,
@@ -63,18 +66,20 @@ export default async function Home() {
   const events = getEvents(bookingList);
 
   return (
-    <main className="bg-white">
-      <section className="h-screen">
-        <BookingCalender
-          defaultDate={defaultDate}
-          events={events}
-          resources={resources as []}
-          services={serviceData as ServiceType[]}
-          status={statusList}
-          resourceIdAccessor="resourceId"
-          resourceTitleAccessor="resourceTitle"
-        />
-      </section>
-    </main>
+    <RxDBProvider>
+      <main className="bg-white">
+        <section className="h-screen">
+          <BookingCalender
+            defaultDate={defaultDate}
+            events={events}
+            resources={resources as []}
+            services={serviceData as ServiceType[]}
+            status={statusList}
+            resourceIdAccessor="resourceId"
+            resourceTitleAccessor="resourceTitle"
+          />
+        </section>
+      </main>
+    </RxDBProvider>
   );
 }

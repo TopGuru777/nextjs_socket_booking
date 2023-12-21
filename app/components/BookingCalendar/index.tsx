@@ -1,5 +1,5 @@
-"use client";
-import React, { useCallback, useMemo, useState } from "react";
+"use client"
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import {
   Calendar as ReactCalendar,
   Views,
@@ -15,6 +15,7 @@ import DeleteConfirmDialog from "../Dialogs/DeleteConfirm";
 import { ServiceType, StatusType, EventType, ResourceType } from "@/app/types";
 import { updateBooking } from "@/app/services";
 import EventDialog from "../Dialogs/Event";
+import { useRxDB } from "@/app/db";
 
 interface Props {
   events: Array<EventType>;
@@ -49,6 +50,7 @@ const Calender = ({
   resourceIdAccessor,
   resourceTitleAccessor,
 }: Props) => {
+  const db: any = useRxDB();
   const asPath = useMemo(() => window.location.hash.slice(1).split("/"), []);
   const [calenderEvents, setCalenderEvents] =
     useState<Array<EventType>>(events);
@@ -64,6 +66,27 @@ const Calender = ({
   const [activeEvent, setActiveEvent] = useState<any>(null);
   const randomColor =
     randomColors[Math.floor(Math.random() * randomColors.length)];
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const db = await getDb();
+  //     setDB(db);
+  //   }
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (db != null) {
+  //     db.collections.heroes.upsert({
+  //       firstName: "Dee",
+  //       lastName: "Juan"
+  //     }).then(function (result: any) {
+  //       console.log("Upserted", result);
+  //     }).catch(function (error: any) {
+  //       console.log("UPsert failed", error);
+  //     });
+  //   }
+  // }, []);
 
   const handleOpenModal = useCallback(() => {
     setIsOpen(true);
