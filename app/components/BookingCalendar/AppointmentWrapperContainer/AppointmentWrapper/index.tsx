@@ -1,27 +1,16 @@
 import Popper from "@/app/components/CustomInputs/Popper";
 import React, { PropsWithChildren, ReactElement, useState } from "react";
 import { type EventWrapperProps } from "react-big-calendar";
-import OutsideClickHandler from "react-outside-click-handler";
-import { EventType, ServiceType, StatusType } from "@/app/types";
-import Event from "../../Event";
 
 interface Props extends EventWrapperProps<any> {
-  status: StatusType[];
-  services: ServiceType[];
   children?: ReactElement<any, any> | undefined;
-  onUpdateEvent: (event: EventType) => void;
-  onDeleteConfirm: (eventId: string) => void;
   onSelectEvent: (event: any) => void;
 }
 
-const EventWrapper = (props: Props) => {
-  const [open, setOpen] = useState<boolean>(false);
+const AppointmentWrapper = (props: Props) => {
   const data = props.event;
   const handleClick = () => {
-    console.log('---data---', data);
     props.onSelectEvent(data);
-
-    // setOpen(!open);
   };
   const customElement = (
     <div
@@ -43,26 +32,7 @@ const EventWrapper = (props: Props) => {
   const eventElement = React.cloneElement(
     props?.children?.props?.children,
     {},
-    <Popper
-      hidePopper={!open}
-      popperComponent={
-        <OutsideClickHandler
-          onOutsideClick={() => {
-            setOpen(false);
-          }}
-        >
-          <Event
-            event={data}
-            status={props.status}
-            services={props.services}
-            onClose={handleClick}
-            onUpdateEvent={props.onUpdateEvent}
-            onDeleteConfirm={props.onDeleteConfirm}
-          />
-        </OutsideClickHandler>
-      }
-      targetComponent={customElement}
-    />
+    customElement
   );
 
   const wrapper = React.cloneElement(
@@ -73,4 +43,4 @@ const EventWrapper = (props: Props) => {
   return wrapper;
 };
 
-export default EventWrapper;
+export default AppointmentWrapper;

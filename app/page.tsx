@@ -1,5 +1,3 @@
-"use client"
-
 import { BookingType, ServiceType, StaffType } from "@/app/types";
 import {
   getBookingList,
@@ -15,6 +13,11 @@ const BookingCalender = dynamic(() => import("@/app/components/BookingCalendar")
   ssr: false,
 });
 
+/**
+ * 
+ * @param data
+ * @returns new-formatted & sorted staff/provider list for calendar
+ */
 const getStaff = (data: StaffType[]) => {
   return data
     .map((staff) => ({
@@ -25,6 +28,12 @@ const getStaff = (data: StaffType[]) => {
     .sort((a: any, b: any) => a.resourceId - b.resourceId);
 };
 
+
+/**
+ * 
+ * @param events 
+ * @returns new formatted booking appointment
+ */
 const getEvents = (events: BookingType[]) => {
   return events?.map((booking: BookingType) => {
     const dateRange = booking.date_range.split(" - ");
@@ -57,12 +66,17 @@ const getEvents = (events: BookingType[]) => {
 
 export default async function Home() {
   const defaultDate = new Date();
+  //fetched staff list
   const staffList = await getStaffList();
+  //fetched service list
   const serviceData = await getServiceList();
+  //fetched booking list
   const bookingList = await getBookingList();
 
   const statusList = await getStatusList();
-  const resources = getStaff(staffList);
+  //formarted staff/providers for calendar
+  const providers = getStaff(staffList);
+  //formated booking list for calendar
   const events = getEvents(bookingList);
 
   return (
@@ -72,11 +86,11 @@ export default async function Home() {
           <BookingCalender
             defaultDate={defaultDate}
             events={events}
-            resources={resources as []}
+            providers={providers as []}
             services={serviceData as ServiceType[]}
             status={statusList}
-            resourceIdAccessor="resourceId"
-            resourceTitleAccessor="resourceTitle"
+            providerIdAccessor="resourceId"
+            providerTitleAccessor="resourceTitle"
           />
         </section>
       </main>

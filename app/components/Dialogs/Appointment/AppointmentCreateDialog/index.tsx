@@ -1,32 +1,30 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition, Tab } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { ResourceType } from "@/app/components/BookingCalendar/type";
-import DetailPanel from "../DetailPanel";
-import CustomerPanel from "./CustomerPanel";
-import { ServiceType, StatusType } from "@/app/types";
+import AppointmentCreateDetailPanel from "../AppointmentCreateDetailPanel";
+import { ProviderType, ServiceType, StatusType } from "@/app/types";
 import moment from "moment";
 import { createBooking, createCustomer, updateCustomer } from "@/app/services";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
-import CustomerForm from "../CustomerForm";
-import EditCustomerForm from "../EditCustomerForm";
+import CustomerCreateForm from "../../Customer/CustomerCreateForm";
+import CustomerEditForm from "../../Customer/CustomerEditForm";
 
 interface Props {
   open: boolean;
   startEvent: Date;
-  resources: ResourceType[];
-  resourceId: number | string;
+  providers: ProviderType[];
+  providerId: number | string;
   services: ServiceType[];
   status: StatusType[];
   addEvent: (value: any) => void;
   onClose: () => void;
 }
 
-const AppoinmentDialog = ({
+const AppointmentCreateDialog = ({
   open,
-  resources,
-  resourceId,
+  providers,
+  providerId,
   services,
   status,
   startEvent,
@@ -43,7 +41,7 @@ const AppoinmentDialog = ({
     status: ""
   });
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const providers = resources.map((resource: ResourceType) => ({
+  const providerList = providers.map((resource: ProviderType) => ({
     label: resource.resourceTitle,
     value: resource.resourceId,
   }));
@@ -95,7 +93,7 @@ const AppoinmentDialog = ({
     const selectedService = services.find(
       (service) => service.uuid === values.service
     );
-    const selectedStaff = resources.find(
+    const selectedStaff = providers.find(
       (resource) => resource.resourceId === values.resourceId
     );
     const selectedStatus = status.find(
@@ -199,6 +197,7 @@ const AppoinmentDialog = ({
       },
     });
     const customerData = response.data.attributes
+    console.log('-----customer created-----', customerData);
     setCustomer({
       name: `${customerData.field_first_name} ${customerData.field_last_name}`,
       email: customerData.field_email_address,
@@ -274,7 +273,7 @@ const AppoinmentDialog = ({
                           style={{ cursor: "move" }}
                           id="draggable-dialog-title"
                         >
-                          Appointment
+                          Create Appointment
                           <button onClick={handleClose}>
                             <XMarkIcon className="h-6 w-6" />
                           </button>
@@ -292,12 +291,12 @@ const AppoinmentDialog = ({
                           </div>
                         </div>
                         <div>
-                          <DetailPanel
+                          <AppointmentCreateDetailPanel
                             startEvent={startEvent as Date}
-                            resourceId={resourceId as number}
+                            providerId={providerId as number}
                             services={services}
                             status={status}
-                            providers={providers}
+                            providers={providerList}
                             saveValues={saveFormValues}
                             data={formValues}
                             customer={customer}
@@ -323,7 +322,7 @@ const AppoinmentDialog = ({
                             <XMarkIcon className="h-6 w-6" />
                           </button>
                         </Dialog.Title>
-                        <CustomerForm onSubmit={handleAddGuest} phone={newPhone} />
+                        <CustomerCreateForm onSubmit={handleAddGuest} phone={newPhone} />
                       </>
                     )}
                   {showEditCustomer && (
@@ -340,7 +339,7 @@ const AppoinmentDialog = ({
                         </button>
                       </Dialog.Title>
 
-                      <EditCustomerForm data={customer} onSubmit={handleUpdateCustomer} />
+                      <CustomerEditForm data={customer} onSubmit={handleUpdateCustomer} />
                     </>
                   )}
                 </Dialog.Panel>
@@ -353,4 +352,4 @@ const AppoinmentDialog = ({
   );
 };
 
-export default AppoinmentDialog;
+export default AppointmentCreateDialog;

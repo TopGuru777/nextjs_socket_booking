@@ -6,7 +6,7 @@ interface Props {
     onSubmit: (values: any) => void;
 }
 
-const EditCustomerForm = ({ data, onSubmit }: Props) => {
+const CustomerEditForm = ({ data, onSubmit }: Props) => {
     const {
         control,
         handleSubmit,
@@ -34,9 +34,6 @@ const EditCustomerForm = ({ data, onSubmit }: Props) => {
     return (
         <form onSubmit={handleSubmit(handleCustomerDataSubmit)}>
             <div className="relative p-4 text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed border-t border-t-blue-gray-100 border-b border-b-blue-gray-100">
-                {/* <button type="button" className="absolute right-3" onClick={onClose}>
-          <XMarkIcon className="h-4 w-4" />
-        </button> */}
                 <Controller
                     control={control}
                     name="first_name"
@@ -139,4 +136,4 @@ const EditCustomerForm = ({ data, onSubmit }: Props) => {
     );
 };
 
-export default EditCustomerForm;
+export default CustomerEditForm;

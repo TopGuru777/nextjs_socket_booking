@@ -8,7 +8,7 @@ interface Props {
   onDeleteConfirm: () => void;
 }
 
-const EventDetails = ({ event, onEdit, onDeleteConfirm }: Props) => {
+const AppointmentDetailsContent = ({ event, onEdit, onDeleteConfirm }: Props) => {
   return (
     <Fragment>
       <div className="px-5 py-4">
@@ -63,8 +63,6 @@ const EventDetails = ({ event, onEdit, onDeleteConfirm }: Props) => {
           </h3>
         </div>
       </div>
-
-
       <div className="flex h-[60px] pt-2 pb-5 pl-4 pr-4 w-full items-center justify-end">
         <button
           className="hover:bg-gray-200 h-8 font-normal text-sm font-sans text-indigo-950 rounded-3xl px-2"
@@ -83,4 +81,4 @@ const EventDetails = ({ event, onEdit, onDeleteConfirm }: Props) => {
   );
 };
 
-export default EventDetails;
+export default AppointmentDetailsContent;

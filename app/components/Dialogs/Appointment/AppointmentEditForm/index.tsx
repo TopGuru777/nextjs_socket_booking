@@ -17,7 +17,7 @@ interface Props {
   onNewCustomer: (value: string) => void;
 }
 
-const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCustomer, onNewCustomer }: Props) => {
+const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent, editCustomer, onNewCustomer }: Props) => {
   // console.log(event);
 
   const serviceOptions = services.map((service: ServiceType) => ({
@@ -291,4 +291,4 @@ const EditEvent = ({ event, services, customer, onClose, onUpdateEvent, editCust
   );
 };
 
-export default EditEvent;
+export default AppointmentEditForm;

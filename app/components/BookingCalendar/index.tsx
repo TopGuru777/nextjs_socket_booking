@@ -9,21 +9,21 @@ import {
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import Toolbar from "./ToolBar";
-import EventWrapperContainer from "./EventWrapperContainer";
-import AppoinmentDialog from "../Dialogs/Appointment";
-import DeleteConfirmDialog from "../Dialogs/DeleteConfirm";
-import { ServiceType, StatusType, EventType, ResourceType } from "@/app/types";
+import AppointmentWrapperContainer from "./AppointmentWrapperContainer";
+import AppointmentCreateDialog from "../Dialogs/Appointment/AppointmentCreateDialog";
+import DeleteConfirmDialog from "../Dialogs/DeleteConfirmDialog";
+import { ServiceType, StatusType, EventType, ProviderType } from "@/app/types";
 import { updateBooking } from "@/app/services";
-import EventDialog from "../Dialogs/Event";
+import AppointmentDetailsDialog from "../Dialogs/Appointment/AppointmentDetailsDialog";
 import { useRxDB } from "@/app/db";
 
 interface Props {
   events: Array<EventType>;
   defaultDate: Date;
   localizer?: DateLocalizer;
-  resources?: Array<ResourceType>;
-  resourceIdAccessor?: any;
-  resourceTitleAccessor?: any;
+  providers?: Array<ProviderType>;
+  providerIdAccessor?: any;
+  providerTitleAccessor?: any;
   services: ServiceType[];
   status: Array<StatusType>;
 }
@@ -44,13 +44,13 @@ const Calender = ({
   events,
   defaultDate,
   localizer = defaultLocalizer,
-  resources,
+  providers,
   services,
   status,
-  resourceIdAccessor,
-  resourceTitleAccessor,
+  providerIdAccessor,
+  providerTitleAccessor,
 }: Props) => {
-  const db: any = useRxDB();
+  // const db: any = useRxDB();
   const asPath = useMemo(() => window.location.hash.slice(1).split("/"), []);
   const [calenderEvents, setCalenderEvents] =
     useState<Array<EventType>>(events);
@@ -88,9 +88,18 @@ const Calender = ({
   //   }
   // }, []);
 
+  /**
+   * @desc open appointment creating dialog
+   */
+
   const handleOpenModal = useCallback(() => {
     setIsOpen(true);
   }, []);
+
+
+  /**
+   * @desc delete appointment
+   */
 
   const handleDeleteConfirm = useCallback(
     (eventId?: string) => {
@@ -105,10 +114,16 @@ const Calender = ({
     [deleteConfirm]
   );
 
+  /**
+   * @desc close appointment creating dialog
+   */
   const handleCloseModal = useCallback(() => {
     setIsOpen(false);
   }, []);
 
+  /**
+   * @desc reschedule on update
+   */
   const handleMoveEvent = useCallback(
     ({
       event,
@@ -123,7 +138,7 @@ const Calender = ({
         event.allDay = true;
       }
       setCalenderEvents((prev: any) => {
-        const selectedResource = resources?.find(
+        const selectedResource = providers?.find(
           (resource) => resource.resourceId === resourceId
         );
         const existing =
@@ -156,15 +171,21 @@ const Calender = ({
         return [...filtered, { ...existing, start, end, resourceId }];
       });
     },
-    [resources]
+    [providers]
   );
 
+  /**
+   * @desc add new appointment to calendar
+   */
   const handleAddEvent = useCallback((event: EventType) => {
     setCalenderEvents((prev) => {
       return [...prev, event];
     });
   }, []);
 
+  /**
+   * @desc update appointment to calendar
+   */
   const handleUpdateEvent = useCallback((event: EventType) => {
     setCalenderEvents((prev) => {
       return prev.map((item) => {
@@ -177,6 +198,9 @@ const Calender = ({
     setIsOpenEvent(false);
   }, []);
 
+  /**
+   * @desc delete appointment from calendar
+   */
   const handleDeleteEvent = useCallback(() => {
     setCalenderEvents((prev) => {
       return prev.filter((item) => item.id !== selectedEvent);
@@ -184,9 +208,12 @@ const Calender = ({
     setIsOpenEvent(false);
   }, [selectedEvent]);
 
+  /**
+   * @desc formatting appointment appearance on calendar
+   */
   const slotPropGetter = useCallback(
     (date: Date, resourceId?: any) => {
-      const currentResource = resources?.find(
+      const currentResource = providers?.find(
         (resource) => Number(resource.resourceId) === Number(resourceId)
       );
       const startTime = currentResource?.start;
@@ -201,7 +228,7 @@ const Calender = ({
         }),
       };
     },
-    [resources]
+    [providers]
   );
 
   const eventPropGetter = useCallback(() => {
@@ -223,11 +250,19 @@ const Calender = ({
     []
   );
 
+  /**
+   * 
+   * @param event
+   * @desc open appointment details dialog
+   */
   const selectEventHandler = (event: any) => {
     setActiveEvent(event);
     setIsOpenEvent(true);
   }
 
+  /**
+   * @desc close appointment details dialog
+   */
   const onCloseEvent = () => {
     setIsOpenEvent(false);
   }
@@ -244,9 +279,9 @@ const Calender = ({
           dayHeaderFormat: "MMM DD, YYYY",
         }}
         resizable={false}
-        resources={resources}
-        resourceIdAccessor={resourceIdAccessor}
-        resourceTitleAccessor={resourceTitleAccessor}
+        resources={providers}
+        resourceIdAccessor={providerIdAccessor}
+        resourceTitleAccessor={providerTitleAccessor}
         defaultDate={defaultDate}
         defaultView={defaultView}
         scrollToTime={new Date(1972, 0, 1, 8)}
@@ -254,6 +289,7 @@ const Calender = ({
         selectable
         slotPropGetter={slotPropGetter}
         showMultiDayTimes={true}
+        //when creating new appointment
         onSelectSlot={(event) => {
           setSelectedSlot({
             resourceId: event.resourceId as number,
@@ -268,19 +304,16 @@ const Calender = ({
         slotGroupPropGetter={slotGroupPropGetter}
         components={{
           toolbar: Toolbar,
-          eventWrapper: EventWrapperContainer({
-            status,
-            services,
-            onUpdateEvent: handleUpdateEvent,
-            onDeleteConfirm: handleDeleteConfirm,
+          //Wrapper for showing event and handling select event
+          eventWrapper: AppointmentWrapperContainer({
             onSelectEvent: selectEventHandler,
           }),
         }}
       />
-      <AppoinmentDialog
+      <AppointmentCreateDialog
         open={isOpen}
-        resources={resources as ResourceType[]}
-        resourceId={selectedSlot?.resourceId as number}
+        providers={providers as ProviderType[]}
+        providerId={selectedSlot?.resourceId as number}
         startEvent={selectedSlot?.start as Date}
         services={services}
         status={status}
@@ -293,7 +326,7 @@ const Calender = ({
         onDelete={handleDeleteEvent}
         onClose={handleDeleteConfirm}
       />
-      <EventDialog
+      <AppointmentDetailsDialog
         open={isOpenEvent}
         event={activeEvent}
         status={status}

@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import Dropdown from "@/app/components/CustomInputs/DropDown";
-import EditEvent from "./EditEvent";
-import EventDetails from "./EventDetails";
+import AppointmentEditForm from "../AppointmentEditForm";
 import { ServiceType, StatusType } from "@/app/types";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
 import { updateBooking, updateCustomer, createCustomer } from "@/app/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
-import EditCustomerForm from "../../Dialogs/EditCustomerForm";
+import CustomerEditForm from "../../Customer/CustomerEditForm";
+import CustomerCreateForm from "../../Customer/CustomerCreateForm";
 import { Dialog } from "@headlessui/react";
-import CustomerForm from "../../Dialogs/CustomerForm";
+import AppointmentDetailsContent from "../AppointmentDetailsContent";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
   onDeleteConfirm: (eventId: string) => void;
 }
 
-const Event = ({
+const AppointmentDetailsForm = ({
   event,
   status,
   services,
@@ -161,6 +161,7 @@ const Event = ({
 
   useEffect(() => {
     if (!socket) {
+      /*
       void fetch("/api/socket");
       socket = io();
       socket.on("connect", () => {
@@ -175,6 +176,7 @@ const Event = ({
       socket.on("userServerDisconnection", (socketid: string) => {
         console.log(socketid);
       });
+      */
     }
     return () => {
       if (socket) {
@@ -190,7 +192,7 @@ const Event = ({
       {!newGuest &&
         <div className="pt-5 pr-4 pl-6 pb-1 relative">
           <div className="flex items-center justify-between pr-3">
-            <h3 className="font-sans font-bold">Appointment</h3>
+            <h3 className="font-sans font-bold">Appointment Details</h3>
             <Dropdown
               selected={selected}
               options={statusOptions}
@@ -208,14 +210,14 @@ const Event = ({
         </div>
       }
       {!newGuest && !showEditCustomer && !showEdit && (
-        <EventDetails
+        <AppointmentDetailsContent
           event={event}
           onEdit={handleEdit}
           onDeleteConfirm={() => onDeleteConfirm(event.id)}
         />
       )}
       {!showEditCustomer && showEdit && (
-        <EditEvent
+        <AppointmentEditForm
           event={event}
           services={services}
           onClose={onClose}
@@ -225,7 +227,7 @@ const Event = ({
           onNewCustomer={handleCreateCustomer}
         />
       )}
-      {showEditCustomer && <EditCustomerForm data={customer} onSubmit={handleUpdateCustomer} />}
+      {showEditCustomer && <CustomerEditForm data={customer} onSubmit={handleUpdateCustomer} />}
       {
         newGuest && (
           <>
@@ -240,11 +242,11 @@ const Event = ({
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </Dialog.Title>
-            <CustomerForm onSubmit={handleAddGuest} phone={phoneInput} />
+            <CustomerCreateForm onSubmit={handleAddGuest} phone={phoneInput} />
           </>
         )}
     </div>
   );
 };
 
-export default Event;
+export default AppointmentDetailsForm;

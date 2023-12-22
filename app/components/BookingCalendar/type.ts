@@ -8,7 +8,7 @@ export interface EventType {
     status: string;
 }
 
-export interface ResourceType {
+export interface ProviderType {
     resourceId: string;
     uuid: string;
     resourceTitle: string;

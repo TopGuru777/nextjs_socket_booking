@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { Dialog, Transition, Tab } from "@headlessui/react";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
-import Event from '../../BookingCalendar/Event';
+import AppointmentDetailsForm from '../AppointmentDetailsForm';
 import { EventType, ServiceType, StatusType } from "@/app/types";
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
     onClose: () => void;
 }
 
-export default function EventDialog({
+export default function AppointmentDetailsDialog({
     open,
     event,
     status,
@@ -51,7 +51,7 @@ export default function EventDialog({
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <Dialog.Panel className="w-full max-w-md transform bg-white text-left align-middle shadow-xl transition-all">
-                                    <Event
+                                    <AppointmentDetailsForm
                                         event={event}
                                         status={status}
                                         services={services}

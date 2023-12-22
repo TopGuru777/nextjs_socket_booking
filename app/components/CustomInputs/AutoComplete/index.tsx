@@ -61,6 +61,9 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
 
   const [isComponentVisible, setIsComponentVisible] = useState(false);
 
+  /**
+  * @desc check if all characters are digits and show suggestion on focus event
+   * */
   const onInputFocus = (e: FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value.length >= 3 && areAllCharactersDigits(value)) {
@@ -68,6 +71,9 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
     }
   }
 
+  /**
+  * @desc check if all characters are digits and show suggestion on text change event
+   * */
   const onTextChanged = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     let suggestions = [] as any;
@@ -78,19 +84,6 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
       setIsComponentVisible(false);
       setSearch({ suggestions, text: value });
     }
-
-    /*    if (value.length > 0) {
-          console.log(value, value.length);
-          // if (value.length > 0) {
-          const regex = new RegExp(`^${value}`, "i");
-          suggestions = data.sort().filter((v: IData) => regex.test(v.name));
-          // }
-          setIsComponentVisible(true);
-          setSearch({ suggestions, text: value });
-        } else {
-          console.log(value.length)
-        }
-    */
   }
 
 
@@ -108,12 +101,15 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
 
     setSelected(true);
   };
-  // console.log(search);
 
+  /**
+   * 
+   * @param text 
+   * @desc get suggestions 
+   */
   const fetchUser = (text: string) => {
     let suggestions = [] as any;
     setSearch({ suggestions, text });
-    // const response = fetch(`https://irislashinc.com/api/irislash-core-customer/${text}?_format=json`,
     setLoading(true);
     const response = fetch(`https://irislashinc.com/api/irislash-core-customer/${text}?_format=json`,
       { headers: { Authorization: AUTH_TOKEN, }, })
@@ -137,11 +133,17 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
 
   const { suggestions } = search;
 
+  /**
+   * @desc add new user
+   */
   const onNewHandler = () => {
     saveValues();
     onAddNew(search.text);
   }
 
+  /**
+   * @desc clear selection
+   */
   const clearSelection = () => {
     onSetValue({
       email: "",
@@ -190,6 +192,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
         </AutoCompleteIcon>
       </div>
       {
+        /* show suggestion */
         suggestions.length > 0 && isComponentVisible && (
           <AutoCompleteContainer style={optionStyle}>
             {
@@ -201,7 +204,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
                   >
                     <p> {item.first_name} demo {item.last_name} </p>
                     <p>{item.email}</p>
-                   
+
                   </AutoCompleteItemButton>
                 </AutoCompleteItem>
               ))
@@ -210,6 +213,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
         )
       }
       {
+        /* show Add Guest button */
         suggestions.length == 0 && isComponentVisible && (
           <AutoCompleteContainer style={optionStyle}>
             <AutoCompleteItem>

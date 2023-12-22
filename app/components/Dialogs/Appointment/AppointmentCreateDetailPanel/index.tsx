@@ -6,12 +6,12 @@ import Dropdown from "@/app/components/CustomInputs/DropDown";
 import { ServiceType, StatusType } from "@/app/types";
 import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
 import { searchCustomer } from "@/app/services";
-import { AutoComplete } from "../../CustomInputs/AutoComplete";
+import { AutoComplete } from "../../../CustomInputs/AutoComplete";
 // import { searchCustomer } from "@/app/services";
 
 interface Props {
   startEvent: Date;
-  resourceId: number;
+  providerId: number;
   status: Array<StatusType>;
   providers: { label: string; value: string }[];
   services: ServiceType[];
@@ -24,9 +24,9 @@ interface Props {
   onEditCustomer: () => void;
 }
 
-const DetailPanel = ({
+const AppointmentCreateDetailPanel = ({
   startEvent,
-  resourceId,
+  providerId,
   providers,
   status,
   services,
@@ -46,7 +46,7 @@ const DetailPanel = ({
     formState: { isValid },
   } = useForm({
     defaultValues: {
-      resourceId: data.resourceId || resourceId,
+      resourceId: data.providerId || providerId,
       service: data.service || "",
       startDate: data.startEvent || startEvent,
       startTime: data.startTime || moment(startEvent).valueOf(),
@@ -266,26 +266,6 @@ const DetailPanel = ({
           }}
         />
 
-        {/* <input
-          type="search"
-          value={value}
-          onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => setShowOptions(true)}
-          onKeyDown={handleNav}
-          className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-          placeholder="Search Customer"
-        /> */}
-
-        {/* <input
-          type="search"
-          onChange={(e) => handleChange(e.target.value)}
-          value=""
-          className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-          placeholder="Add Guest"
-        /> */}
-
-        {/* <AutoComplete onSelect={onChange} /> */}
-
         <AutoComplete
           inputStyle={{ backgroundColor: "PaleTurquoise" }}
           optionStyle={{ backgroundColor: "LemonChiffon" }}
@@ -326,4 +306,4 @@ const DetailPanel = ({
   );
 };
 
-export default DetailPanel;
+export default AppointmentCreateDetailPanel;

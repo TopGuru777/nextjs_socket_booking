@@ -74,7 +74,7 @@ export interface EventType {
   customer_last_name: string;
 }
 
-export interface ResourceType {
+export interface ProviderType {
   resourceId: string;
   uuid: string;
   resourceTitle: string;

@@ -3,6 +3,13 @@ import moment from "moment-timezone";
 const AUTH_TOKEN = process.env.NEXT_PUBLIC_AUTH_TOKEN!;
 const BASE_API = process.env.NEXT_PUBLIC_BASE_API;
 
+/**
+ * 
+ * @returns booking list
+ * @fields nid, uuid, date_range, service_name, service_cost, service_duration, customer_first_name, customer_last_name, 
+    customer_phone, customer_uuid, customer_email, staff_id, staff_title, status
+ */
+
 export const getBookingList = async () => {
 
   // const current_local_date = moment('20231214').tz("America/New_York").format("YYYY-MM-DD");
@@ -47,6 +54,13 @@ export const getBookingList = async () => {
   }
 };
 
+
+/**
+ * 
+ * @returns staff(providers) list
+ * @fields id, uuid, title
+ */
+
 export const getStaffList = async () => {
   try {
     const response = await fetch(`${BASE_API}/staff`, {
@@ -62,6 +76,13 @@ export const getStaffList = async () => {
     return error;
   }
 };
+
+/**
+ * 
+ * @returns service list
+ * @fields  uuid, title, cost, duration
+  }
+ */
 
 export const getServiceList = async () => {
   try {
@@ -79,6 +100,12 @@ export const getServiceList = async () => {
   }
 };
 
+/**
+ * 
+ * @returns customer list
+ * @unused
+ */
+
 export const getCustomerList = async () => {
   try {
     const response = await fetch(`${BASE_API}/customer`, {
@@ -94,6 +121,11 @@ export const getCustomerList = async () => {
     return error;
   }
 };
+
+/**
+ * @returns status list
+ * @values Confirmed, Paid, Running Late
+ */
 
 export const getStatusList = async () => {
   try {
@@ -111,7 +143,15 @@ export const getStatusList = async () => {
   }
 };
 
+/**
+ * 
+ * @param data(title, field_date_range[duration, end_value, rrule, rrule_index, timezone, value])
+ *  
+ * @returns response(field_date_range, title, id)
+ */
+
 export const createBooking = async (data: any) => {
+  // console.log('-----create booking-----', data);
   try {
     const response = await fetch(
       `https://irislashinc.com/jsonapi/node/booking`,
@@ -131,7 +171,14 @@ export const createBooking = async (data: any) => {
   }
 };
 
+/**
+ * 
+ * @param data(field_email_address, field_first_name, field_last_name, field_phone, title)
+ * @returns response(field_email_address, field_first_name, field_last_name, field_phone, title)
+ */
+
 export const createCustomer = async (data: any) => {
+  // console.log('-----create customer-----', data);
   try {
     const response = await fetch(
       `https://irislashinc.com/jsonapi/node/customers`,
@@ -151,7 +198,14 @@ export const createCustomer = async (data: any) => {
   }
 };
 
+/**
+ * 
+ * @param data(field_email_address, field_first_name, field_last_name, field_phone, title)
+ * @returns response(field_email_address, field_first_name, field_last_name, field_phone, title)
+ */
+
 export const updateCustomer = async (data: any) => {
+  // console.log('-----update customer-----', data);
   try {
     const response = await fetch(
       `https://irislashinc.com/jsonapi/node/customers/${data.id}`,
@@ -171,7 +225,14 @@ export const updateCustomer = async (data: any) => {
   }
 };
 
+/**
+ * 
+ * @param data 
+ * @returns 
+ */
+
 export const updateBooking = async (data: any) => {
+  console.log('-----update booking-----', data);
   try {
     const response = await fetch(
       `https://irislashinc.com/jsonapi/node/booking/${data.id}`,
@@ -191,7 +252,14 @@ export const updateBooking = async (data: any) => {
   }
 };
 
+/**
+ * 
+ * @param bookingId 
+ * @returns 
+ */
+
 export const deleteBooking = async (bookingId: string) => {
+  console.log('-----delete booking-----', bookingId);
   try {
     const response = await fetch(
       ` https://irislashinc.com/jsonapi/node/booking/${bookingId}`,
@@ -210,7 +278,14 @@ export const deleteBooking = async (bookingId: string) => {
   }
 };
 
+/**
+ * 
+ * @param searchValue 
+ * @returns 
+ */
+
 export const searchCustomer = async (searchValue: string) => {
+  console.log('-----search customer-----', searchValue);
   try {
     const response = await fetch(
       `https://irislashinc.com/api/irislash-core-customer/${searchValue}?_format=json`,

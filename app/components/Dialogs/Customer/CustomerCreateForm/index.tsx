@@ -7,7 +7,7 @@ interface Props {
   // onClose: () => void;
 }
 
-const CustomerForm = ({ phone, onSubmit }: Props) => {
+const CustomerCreateForm = ({ phone, onSubmit }: Props) => {
   const {
     control,
     handleSubmit,
@@ -35,9 +35,6 @@ const CustomerForm = ({ phone, onSubmit }: Props) => {
   return (
     <form onSubmit={handleSubmit(handleCustomerDataSubmit)}>
       <div className="relative p-4 text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed border-t border-t-blue-gray-100 border-b border-b-blue-gray-100">
-        {/* <button type="button" className="absolute right-3" onClick={onClose}>
-          <XMarkIcon className="h-4 w-4" />
-        </button> */}
         <Controller
           control={control}
           name="first_name"
@@ -140,4 +137,4 @@ const CustomerForm = ({ phone, onSubmit }: Props) => {
   );
 };
 
-export default CustomerForm;
+export default CustomerCreateForm;
