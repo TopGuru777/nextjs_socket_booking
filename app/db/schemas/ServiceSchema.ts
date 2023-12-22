@@ -6,9 +6,7 @@ export const ServiceSchema = {
       key: 'uuid',
       // fields that will be used to create the composed key
       fields: [
-          'title',
-          'cost',
-          'duration'
+          'uuid',
       ],
       // separator which is used to concat the fields values.
       separator: '|'

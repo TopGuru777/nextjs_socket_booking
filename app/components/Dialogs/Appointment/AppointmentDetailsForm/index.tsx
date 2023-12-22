@@ -5,7 +5,7 @@ import AppointmentEditForm from "../AppointmentEditForm";
 import { ServiceType, StatusType } from "@/app/types";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
-import { updateBooking, updateCustomer, createCustomer } from "@/app/services";
+import { updateBooking, updateCustomer, createCustomer } from "@/app/api/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
 import CustomerEditForm from "../../Customer/CustomerEditForm";
 import CustomerCreateForm from "../../Customer/CustomerCreateForm";
@@ -201,10 +201,7 @@ const AppointmentDetailsForm = ({
               onSelect={handleSelect}
             />
           </div>
-          <button
-            className="absolute z-10 top-[8px] right-[8px]"
-            onClick={onClose}
-          >
+          <button className="absolute z-10 top-[8px] right-[8px]" onClick={onClose}>
             <XMarkIcon className="h-4 w-4" />
           </button>
         </div>

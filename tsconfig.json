@@ -23,7 +23,7 @@
       "@/*": ["./*"],
       "@app/*": ["./app/*"],
       "@types/*": ["./app/types/*"],
-      "@services/*": ["./app/services/*"],
+      "@services/*": ["./app/api/services/*"],
       "@components/*": ["./app/components/*"],
       "@utils/*": ["./app/utils/*"]
     },

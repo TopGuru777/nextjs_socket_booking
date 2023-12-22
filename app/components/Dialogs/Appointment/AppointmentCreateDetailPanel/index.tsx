@@ -5,15 +5,15 @@ import SelectDateDropdown from "@/app/components/CustomInputs/SelectDateDropdown
 import Dropdown from "@/app/components/CustomInputs/DropDown";
 import { ServiceType, StatusType } from "@/app/types";
 import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
-import { searchCustomer } from "@/app/services";
+import { searchCustomer } from "@/app/api/services";
 import { AutoComplete } from "../../../CustomInputs/AutoComplete";
 // import { searchCustomer } from "@/app/services";
 
 interface Props {
   startEvent: Date;
-  providerId: number;
+  staffId: number;
+  staffs: { label: string; value: string }[];
   status: Array<StatusType>;
-  providers: { label: string; value: string }[];
   services: ServiceType[];
   data: any;
   customer: any;
@@ -26,8 +26,8 @@ interface Props {
 
 const AppointmentCreateDetailPanel = ({
   startEvent,
-  providerId,
-  providers,
+  staffId: propsStaffId,
+  staffs,
   status,
   services,
   onSubmit,
@@ -46,7 +46,7 @@ const AppointmentCreateDetailPanel = ({
     formState: { isValid },
   } = useForm({
     defaultValues: {
-      resourceId: data.providerId || providerId,
+      staffId: data.staffId || propsStaffId,
       service: data.service || "",
       startDate: data.startEvent || startEvent,
       startTime: data.startTime || moment(startEvent).valueOf(),
@@ -111,20 +111,14 @@ const AppointmentCreateDetailPanel = ({
         />
         <Controller
           control={control}
-          name="resourceId"
+          name="staffId"
           rules={{
             required: true,
           }}
           render={({ field: { onChange, value } }) => (
             <div className="mb-3">
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Provider
-              </label>
-              <SelectDropdown
-                selected={value}
-                options={providers}
-                onChange={(selected) => onChange(selected.value)}
-              />
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Provider</label>
+              <SelectDropdown selected={value} options={staffs} onChange={(selected) => onChange(selected.value)} />
             </div>
           )}
         />
@@ -146,32 +140,17 @@ const AppointmentCreateDetailPanel = ({
             }
             return (
               <div className="mb-3">
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Service
-                </label>
-                <SelectDropdown
-                  placeholder="Select a Service"
-                  options={serviceOptions}
-                  selected={value}
-                  onChange={(selected) => onChange(selected.value)}
-                />
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Service</label>
+                <SelectDropdown placeholder="Select a Service" options={serviceOptions} selected={value} onChange={(selected) => onChange(selected.value)} />
                 {selectedService && (
                   <div className="flex justify-between mt-1">
                     <div className="flex">
-                      <p className="text-sm font-medium text-gray-900 mr-1">
-                        Cost:
-                      </p>
-                      <p className="text-sm font-normal text-gray-900">
-                        ${selectedService.cost}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900 mr-1">Cost:</p>
+                      <p className="text-sm font-normal text-gray-900">${selectedService.cost}</p>
                     </div>
                     <div className="flex">
-                      <p className="text-sm font-medium text-gray-900 mr-1">
-                        Duration:
-                      </p>
-                      <p className="text-sm font-normal text-gray-900">
-                        {selectedService.duration}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900 mr-1">Duration:</p>
+                      <p className="text-sm font-normal text-gray-900">{selectedService.duration}</p>
                     </div>
                   </div>
                 )}
@@ -189,21 +168,14 @@ const AppointmentCreateDetailPanel = ({
             return (
               <div className="flex mb-3">
                 <div className="flex-grow w-[50%] mr-2">
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Date
-                  </label>
-                  <SelectDateDropdown
-                    value={startDate}
-                    onChange={(selectedDate) => {
-                      onChange(selectedDate);
-                      setValue("startTime", moment(selectedDate).valueOf());
-                    }}
-                  />
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
+                  <SelectDateDropdown value={startDate} onChange={(selectedDate) => {
+                    onChange(selectedDate);
+                    setValue("startTime", moment(selectedDate).valueOf());
+                  }} />
                 </div>
                 <div className="flex-grow">
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Time
-                  </label>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Time</label>
                   <div className="flex items-center gap-1">
                     <Controller
                       control={control}
@@ -281,26 +253,14 @@ const AppointmentCreateDetailPanel = ({
           name="note"
           render={({ field }) => (
             <div className="mb-3">
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Notes
-              </label>
-              <textarea
-                {...field}
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Notes for the Customer"
-              />
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Notes</label>
+              <textarea {...field} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Notes for the Customer" />
             </div>
           )}
         />
       </div>
       <div className="flex items-center justify-start shrink-0 flex-wrap p-4 text-blue-gray-500">
-        <button
-          type="submit"
-          className="inline-flex justify-center bg-blue-100 px-8 py-2 text-sm font-medium hover:bg-blue-200"
-          disabled={!isValid}
-        >
-          Create Appointment
-        </button>
+        <button type="submit" className="inline-flex justify-center bg-blue-100 px-8 py-2 text-sm font-medium hover:bg-blue-200" disabled={!isValid}>Create Appointment</button>
       </div>
     </form>
   );

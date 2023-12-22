@@ -57,7 +57,7 @@ export const getBookingList = async () => {
 
 /**
  * 
- * @returns staff(providers) list
+ * @returns staff list
  * @fields id, uuid, title
  */
 

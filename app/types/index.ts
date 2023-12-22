@@ -64,20 +64,12 @@ export interface EventType {
   cost: string;
   service: string;
   status: string;
-  resourceId?: number;
-  staff_title: string;
+  resourceId?: number; //for react big calendar
+  staff_name: string;
   name: string;
   phone: string;
   duration: string;
   email: string;
   customer_first_name: string;
   customer_last_name: string;
-}
-
-export interface ProviderType {
-  resourceId: string;
-  uuid: string;
-  resourceTitle: string;
-  start?: number;
-  end?: number;
 }

@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition, Tab } from "@headlessui/react";
-import { deleteBooking } from "@/app/services";
+import { deleteBooking } from "@/app/api/services";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface Props {

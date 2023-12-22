@@ -1,10 +1,11 @@
 'use client'
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { createRxDatabase, addRxPlugin } from 'rxdb';
+import { createRxDatabase, addRxPlugin, removeRxDatabase } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBJsonDumpPlugin } from 'rxdb/plugins/json-dump';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
-import { HumanSchema } from './schemas/TestSchema';
+import { BookingSchema, ServiceSchema, StaffSchema, StatusSchema, CustomerSchema } from './schemas';
+import { getBookingList, getCustomerList, getServiceList, getStaffList, getStatusList } from '../api/services';
 
 // Install the necessary plugins
 addRxPlugin(RxDBDevModePlugin);
@@ -19,18 +20,45 @@ export const useRxDB = () => {
 };
 
 const initDb = async () => {
+  const indexedDBStorage = getRxStorageDexie();
+
   let db = await createRxDatabase({
-    name: 'heroes',
+    name: 'booking',
     storage: getRxStorageDexie(),
   });
 
-  if (!('heroes' in db.collections)) {
-    await db.addCollections({
-      heroes: {
-        schema: HumanSchema
-      }
-    });
-  }
+  await db.addCollections({
+    bookings: {
+      schema: BookingSchema
+    },
+    services: {
+      schema: ServiceSchema
+    },
+    staffs: {
+      schema: StaffSchema
+    },
+    statuses: {
+      schema: StatusSchema
+    },
+    customers: {
+      schema: CustomerSchema
+    }
+  });
+
+  const serviceList = await getServiceList();
+  db.collections.services.bulkUpsert(serviceList);
+
+  const bookingList = await getBookingList();
+  db.collections.bookings.bulkUpsert(bookingList);
+
+  const staffList = await getStaffList();
+  db.collections.staffs.bulkUpsert(staffList);
+
+  const statusList = await getStatusList();
+  db.collections.statuses.bulkUpsert(statusList);
+
+  const customerList = await getCustomerList();
+  db.collections.customers.bulkUpsert(customerList);
 
   return db;
 };

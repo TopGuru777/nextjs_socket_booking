@@ -12,20 +12,17 @@ import Toolbar from "./ToolBar";
 import AppointmentWrapperContainer from "./AppointmentWrapperContainer";
 import AppointmentCreateDialog from "../Dialogs/Appointment/AppointmentCreateDialog";
 import DeleteConfirmDialog from "../Dialogs/DeleteConfirmDialog";
-import { ServiceType, StatusType, EventType, ProviderType } from "@/app/types";
-import { updateBooking } from "@/app/services";
+import { ServiceType, StatusType, EventType, BookingType, StaffType } from "@/app/types";
+import { updateBooking } from "@/app/api/services";
 import AppointmentDetailsDialog from "../Dialogs/Appointment/AppointmentDetailsDialog";
 import { useRxDB } from "@/app/db";
+import mt from "moment-timezone";
 
 interface Props {
-  events: Array<EventType>;
   defaultDate: Date;
   localizer?: DateLocalizer;
-  providers?: Array<ProviderType>;
-  providerIdAccessor?: any;
-  providerTitleAccessor?: any;
-  services: ServiceType[];
-  status: Array<StatusType>;
+  staffIdAccessor?: any;
+  staffNameAccessor?: any;
 }
 moment.locale("en-US");
 const defaultLocalizer = momentLocalizer(moment);
@@ -40,17 +37,71 @@ const randomColors = [
   "38, 214, 30",
 ];
 
+
+/**
+ * 
+ * @param data
+ * @returns new-formatted & sorted staff list for calendar
+ */
+const getStaff = (data: StaffType[]): any[] => {
+  return data
+    .map((staff) => ({
+      staff_id: Number(staff.id),
+      uuid: staff.uuid,
+      staff_name: staff.title,
+    }))
+    .sort((a: any, b: any) => a.staff_id - b.staff_id);
+};
+
+
+/**
+ * 
+ * @param events 
+ * @returns new formatted booking appointment
+ */
+const getEvents = (events: BookingType[]): any[] => {
+  return events?.map((booking: BookingType) => {
+    const dateRange = booking.date_range.split(" - ");
+
+    /**
+     * convert to new local timezone
+     */
+    const start_date = mt.tz(dateRange[0] + "Z", "America/New_York").format();
+    const end_date = mt.tz(dateRange[1] + "Z", "America/New_York").format();
+    return {
+      id: booking.uuid,
+      customer_id: booking.customer_uuid,
+      service: booking.service_name,
+      cost: booking.service_cost,
+      duration: booking.service_duration,
+      name: `${booking.customer_first_name} ${booking.customer_last_name}`,
+      phone: booking.customer_phone,
+      email: booking.customer_email,
+      title: `${booking.customer_first_name} ${booking.customer_last_name}`,
+      start: new Date(start_date),
+      end: new Date(end_date),
+      resourceId: Number(booking.staff_id),
+      staff_name: booking.staff_title,
+      status: booking.status,
+      customer_first_name: booking.customer_first_name,
+      customer_last_name: booking.customer_last_name
+    };
+  });
+};
+
 const Calender = ({
-  events,
   defaultDate,
   localizer = defaultLocalizer,
-  providers,
-  services,
-  status,
-  providerIdAccessor,
-  providerTitleAccessor,
+  staffIdAccessor,
+  staffNameAccessor,
 }: Props) => {
-  // const db: any = useRxDB();
+  const db: any = useRxDB();
+
+  const [services, setServices] = useState<ServiceType[]>([]);
+  const [status, setStatus] = useState<StatusType[]>([]);
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [staffs, setStaffs] = useState<any[]>([]);
+
   const asPath = useMemo(() => window.location.hash.slice(1).split("/"), []);
   const [calenderEvents, setCalenderEvents] =
     useState<Array<EventType>>(events);
@@ -59,7 +110,7 @@ const Calender = ({
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<{
-    resourceId: string | number;
+    staffId: string | number;
     start: Date;
     end: Date;
   } | null>(null);
@@ -67,26 +118,32 @@ const Calender = ({
   const randomColor =
     randomColors[Math.floor(Math.random() * randomColors.length)];
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const db = await getDb();
-  //     setDB(db);
-  //   }
-  //   fetchData();
-  // }, []);
+  //load data from indexeddb
 
-  // useEffect(() => {
-  //   if (db != null) {
-  //     db.collections.heroes.upsert({
-  //       firstName: "Dee",
-  //       lastName: "Juan"
-  //     }).then(function (result: any) {
-  //       console.log("Upserted", result);
-  //     }).catch(function (error: any) {
-  //       console.log("UPsert failed", error);
-  //     });
-  //   }
-  // }, []);
+  const loadDataFromIndexedDB = async () => {
+    const serviceList = await db.collections.services.exportJSON();
+    setServices(serviceList.docs);
+    const statusList = await db.collections.statuses.exportJSON();
+    setStatus(statusList.docs);
+    const staffList = await db.collections.staffs.exportJSON();
+    setStaffs(getStaff(staffList.docs));
+    const bookingList = await db.collections.bookings.exportJSON();
+    setEvents(getEvents(bookingList.docs));
+  }
+
+  useEffect(() => {
+    if (db != null) {
+      loadDataFromIndexedDB();
+    }
+  }, [db]);
+
+  // update calendar based on events
+  useEffect(() => {
+    setCalenderEvents(events);
+    console.log('@calendar events@', events);
+    console.log('@resources@', staffs);
+  }, [events])
+
 
   /**
    * @desc open appointment creating dialog
@@ -138,8 +195,8 @@ const Calender = ({
         event.allDay = true;
       }
       setCalenderEvents((prev: any) => {
-        const selectedResource = providers?.find(
-          (resource) => resource.resourceId === resourceId
+        const selectedStaff = staffs?.find(
+          (staff) => staff.staff_id === resourceId
         );
         const existing =
           prev.find((ev: { id: any }) => ev.id === event.id) ?? {};
@@ -162,7 +219,7 @@ const Calender = ({
               data: [
                 {
                   type: "node--staffs",
-                  id: selectedResource?.uuid,
+                  id: selectedStaff?.uuid,
                 },
               ],
             },
@@ -171,7 +228,7 @@ const Calender = ({
         return [...filtered, { ...existing, start, end, resourceId }];
       });
     },
-    [providers]
+    [staffs]
   );
 
   /**
@@ -213,8 +270,8 @@ const Calender = ({
    */
   const slotPropGetter = useCallback(
     (date: Date, resourceId?: any) => {
-      const currentResource = providers?.find(
-        (resource) => Number(resource.resourceId) === Number(resourceId)
+      const currentResource = staffs?.find(
+        (staff) => Number(staff.staff_id) === Number(resourceId)
       );
       const startTime = currentResource?.start;
       const endTime = currentResource?.end;
@@ -228,7 +285,7 @@ const Calender = ({
         }),
       };
     },
-    [providers]
+    [staffs]
   );
 
   const eventPropGetter = useCallback(() => {
@@ -279,9 +336,9 @@ const Calender = ({
           dayHeaderFormat: "MMM DD, YYYY",
         }}
         resizable={false}
-        resources={providers}
-        resourceIdAccessor={providerIdAccessor}
-        resourceTitleAccessor={providerTitleAccessor}
+        resources={staffs}
+        resourceIdAccessor={staffIdAccessor}
+        resourceTitleAccessor={staffNameAccessor}
         defaultDate={defaultDate}
         defaultView={defaultView}
         scrollToTime={new Date(1972, 0, 1, 8)}
@@ -292,7 +349,7 @@ const Calender = ({
         //when creating new appointment
         onSelectSlot={(event) => {
           setSelectedSlot({
-            resourceId: event.resourceId as number,
+            staffId: event.resourceId as number,
             start: event.start,
             end: event.end,
           });
@@ -312,8 +369,8 @@ const Calender = ({
       />
       <AppointmentCreateDialog
         open={isOpen}
-        providers={providers as ProviderType[]}
-        providerId={selectedSlot?.resourceId as number}
+        staffs={staffs}
+        staffId={selectedSlot?.staffId as number}
         startEvent={selectedSlot?.start as Date}
         services={services}
         status={status}

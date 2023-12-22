@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import SelectDropdown from "@/app/components/CustomInputs/SelectDropdown";
 import SelectDateDropdown from "@/app/components/CustomInputs/SelectDateDropdown";
 import { EventType, ServiceType } from "@/app/types";
-import { updateBooking } from "@/app/services";
+import { updateBooking } from "@/app/api/services";
 import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
 import { AutoComplete } from "../../../CustomInputs/AutoComplete";
 
@@ -132,9 +132,7 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
             }
             return (
               <div className="mb-3">
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Service
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Service</label>
                 <SelectDropdown
                   placeholder="Select a Service"
                   options={serviceOptions}
@@ -144,20 +142,12 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
                 {selectedService && (
                   <div className="flex justify-between mt-1">
                     <div className="flex">
-                      <p className="text-sm font-medium text-gray-900 mr-1">
-                        Cost:
-                      </p>
-                      <p className="text-sm font-normal text-gray-900">
-                        ${selectedService.cost}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900 mr-1">Cost:</p>
+                      <p className="text-sm font-normal text-gray-900">${selectedService.cost}</p>
                     </div>
                     <div className="flex">
-                      <p className="text-sm font-medium text-gray-900 mr-1">
-                        Duration:
-                      </p>
-                      <p className="text-sm font-normal text-gray-900">
-                        {selectedService.duration}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900 mr-1">Duration:</p>
+                      <p className="text-sm font-normal text-gray-900">{selectedService.duration}</p>
                     </div>
                   </div>
                 )}
@@ -175,21 +165,11 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
             return (
               <div className="flex mb-3">
                 <div className="flex-grow w-[50%] mr-2">
-                  <label
-                    htmlFor="eventDate"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Date
-                  </label>
+                  <label htmlFor="eventDate" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
                   <SelectDateDropdown value={value} onChange={onChange} />
                 </div>
                 <div className="flex-grow">
-                  <label
-                    htmlFor="time"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Time
-                  </label>
+                  <label htmlFor="time" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Time</label>
                   <div className="flex items-center gap-1">
                     <Controller
                       control={control}
@@ -259,11 +239,7 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
           }}
           render={({ field: { onChange, value } }) => (
             <div>
-              <label
-                htmlFor="customer"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Customer
-              </label>
+              <label htmlFor="customer" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Customer</label>
               <AutoComplete
                 inputStyle={{ backgroundColor: "PaleTurquoise" }}
                 optionStyle={{ backgroundColor: "LemonChiffon" }}
@@ -274,18 +250,12 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
                 onEditCustomer={() => editCustomer(value)}
                 saveValues={() => { }}
               />
-              {/* <AutoComplete onSelect={onChange} onEditCustomer={() => editCustomer(value)} selectedValue={value} /> */}
             </div>
           )}
         />
       </div>
       <div className="flex h-[60px] pt-2 pb-5 pl-4 pr-4 w-full items-center justify-end">
-        <button
-          disabled={!isValid}
-          className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-3xl text-sm px-5 py-2 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        >
-          Save
-        </button>
+        <button disabled={!isValid} className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-3xl text-sm px-5 py-2 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save</button>
       </div>
     </form>
   );

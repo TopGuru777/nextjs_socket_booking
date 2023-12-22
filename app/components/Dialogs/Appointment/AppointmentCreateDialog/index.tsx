@@ -2,19 +2,19 @@ import { Fragment, useState } from "react";
 import { Dialog, Transition, Tab } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import AppointmentCreateDetailPanel from "../AppointmentCreateDetailPanel";
-import { ProviderType, ServiceType, StatusType } from "@/app/types";
+import { ServiceType, StatusType } from "@/app/types";
 import moment from "moment";
-import { createBooking, createCustomer, updateCustomer } from "@/app/services";
 import Draggable from "react-draggable";
 import { classNames } from "@utils/helper";
 import CustomerCreateForm from "../../Customer/CustomerCreateForm";
 import CustomerEditForm from "../../Customer/CustomerEditForm";
+import { createAppointment, createCustomer, updateCustomer } from "./helpers";
 
 interface Props {
   open: boolean;
   startEvent: Date;
-  providers: ProviderType[];
-  providerId: number | string;
+  staffs: any[];
+  staffId: number | string;
   services: ServiceType[];
   status: StatusType[];
   addEvent: (value: any) => void;
@@ -23,8 +23,8 @@ interface Props {
 
 const AppointmentCreateDialog = ({
   open,
-  providers,
-  providerId,
+  staffs,
+  staffId,
   services,
   status,
   startEvent,
@@ -32,7 +32,7 @@ const AppointmentCreateDialog = ({
   onClose,
 }: Props) => {
   const [formValues, setFormValues] = useState({
-    resourceId: "",
+    staffId: "",
     service: "",
     startDate: "",
     startTime: "",
@@ -41,9 +41,9 @@ const AppointmentCreateDialog = ({
     status: ""
   });
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const providerList = providers.map((resource: ProviderType) => ({
-    label: resource.resourceTitle,
-    value: resource.resourceId,
+  const staffList = staffs.map((staff: any) => ({
+    label: staff.staff_name,
+    value: staff.staff_id,
   }));
   const [customer, setCustomer] = useState<any>({
     email: "",
@@ -71,21 +71,9 @@ const AppointmentCreateDialog = ({
   }
 
   const handleUpdateCustomer = async (values: any) => {
-    let customerData: any = {
-      type: "node--customers",
-      id: customer.uuid,
-      attributes: {
-        title: `${values.first_name} ${values.last_name}`,
-        field_email_address: values.email,
-        field_first_name: values.first_name,
-        field_last_name: values.last_name,
-        field_phone: values.phone
-      }
-    }
-    // console.log('-----data----', customerData);
-    let response = await updateCustomer(customerData);
-    // console.log('----response----', response);
-    setCustomer(values);
+    updateCustomer(values, customer);
+    console.log('----updated customer----', values);
+    setCustomer({ ...values, name: `${values.first_name} ${values.last_name}` });
     closeEditingCustomer();
   }
 
@@ -93,8 +81,8 @@ const AppointmentCreateDialog = ({
     const selectedService = services.find(
       (service) => service.uuid === values.service
     );
-    const selectedStaff = providers.find(
-      (resource) => resource.resourceId === values.resourceId
+    const selectedStaff = staffs.find(
+      (staff) => staff.staff_id === values.staffId
     );
     const selectedStatus = status.find(
       (value) => value.uuid === values.status
@@ -102,81 +90,22 @@ const AppointmentCreateDialog = ({
     const name = `${customer?.first_name} ${customer?.last_name}`;
     const startTime = moment(values.startTime).format();
     const endTime = moment(values.endTime).format();
-    let relationships: any = {
-      field_service: {
-        data: [
-          {
-            type: "node--services",
-            id: values.service,
-          },
-        ],
-      },
-      field_staff: {
-        data: [
-          {
-            type: "node--staffs",
-            id: selectedStaff?.uuid,
-          },
-        ],
-      },
-    };
-    if (values.status) {
-      relationships = {
-        ...relationships,
-        field_status: {
-          data: [
-            {
-              type: "taxonomy_term--status",
-              id: values.status,
-            },
-          ],
-        },
-      };
-    }
-    if (customer.uuid) {
-      relationships = {
-        ...relationships,
-        field_customer: {
-          data: [
-            {
-              type: "node--customers",
-              id: customer.uuid,
-            },
-          ],
-        },
-      };
-    }
-    createBooking({
-      type: "node--booking",
-      attributes: {
-        title: customer.name || name,
-        field_date_range: {
-          value: startTime,
-          end_value: endTime,
-          duration: Number(selectedService?.duration),
-          rrule: null,
-          rrule_index: null,
-          timezone: "UTC",
-        },
-      },
-      relationships,
-    }).then((response) => {
-      addEvent({
-        id: response.data.id,
-        start: moment(values.startTime).toDate(),
-        end: moment(values.endTime).toDate(),
-        resourceId: values.resourceId,
-        service: selectedService?.title,
-        cost: selectedService?.cost,
-        duration: selectedService?.duration,
-        title: customer.name || name,
-        status: selectedStatus?.name,
-        name: customer.name || name,
-        email: customer.email,
-        phone: customer.phone,
-      });
-      handleClose();
+    const response: any = await createAppointment({ ...values, selectedService, selectedStaff, selectedStatus, fullname: name, startTime, endTime }, customer);
+    addEvent({
+      id: response.data.id,
+      start: moment(values.startTime).toDate(),
+      end: moment(values.endTime).toDate(),
+      resourceId: values.staffId,
+      service: selectedService?.title,
+      cost: selectedService?.cost,
+      duration: selectedService?.duration,
+      title: customer.name || name,
+      status: selectedStatus?.name,
+      name: customer.name || name,
+      email: customer.email,
+      phone: customer.phone,
     });
+    handleClose();
   };
 
   const saveFormValues = async (values: any) => {
@@ -184,20 +113,7 @@ const AppointmentCreateDialog = ({
   }
 
   const handleAddGuest = async (values: any) => {
-    const name = `${values?.first_name} ${values?.last_name}`;
-    const response = await createCustomer({
-      type: "node--customers",
-      attributes: {
-        title: name,
-        field_first_name: values.first_name,
-        field_last_name: values.last_name,
-        field_email_address: values.email,
-        field_phone: values.phone,
-        body: null,
-      },
-    });
-    const customerData = response.data.attributes
-    console.log('-----customer created-----', customerData);
+    const customerData = await createCustomer(values);
     setCustomer({
       name: `${customerData.field_first_name} ${customerData.field_last_name}`,
       email: customerData.field_email_address,
@@ -205,7 +121,7 @@ const AppointmentCreateDialog = ({
       last_name: customerData.field_last_name,
       phone: customerData.field_phone,
       nid: customerData.drupal_internal__nid,
-      uuid: response.data.id
+      uuid: customerData.id
     });
     setNewGuest(false);
   }
@@ -213,7 +129,7 @@ const AppointmentCreateDialog = ({
   const handleClose = () => {
     onClose();
     setFormValues({
-      resourceId: "",
+      staffId: "",
       service: "",
       startDate: "",
       startTime: "",
@@ -286,17 +202,15 @@ const AppointmentCreateDialog = ({
                               "bg-white shadow"
                             )
                             }
-                          >
-                            Details
-                          </div>
+                          >Details</div>
                         </div>
                         <div>
                           <AppointmentCreateDetailPanel
                             startEvent={startEvent as Date}
-                            providerId={providerId as number}
+                            staffId={staffId as number}
                             services={services}
                             status={status}
-                            providers={providerList}
+                            staffs={staffList}
                             saveValues={saveFormValues}
                             data={formValues}
                             customer={customer}

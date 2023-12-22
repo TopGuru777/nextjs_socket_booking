@@ -7,6 +7,7 @@ interface Props {
 }
 
 const CustomerEditForm = ({ data, onSubmit }: Props) => {
+    console.log('----->edit customer<----', data);
     const {
         control,
         handleSubmit,
@@ -39,18 +40,8 @@ const CustomerEditForm = ({ data, onSubmit }: Props) => {
                     name="first_name"
                     render={({ field }) => (
                         <div className="mb-3">
-                            <label
-                                htmlFor="first_name"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                First Name
-                            </label>
-                            <input
-                                {...field}
-                                id="first_name"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Enter first name"
-                            />
+                            <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First Name</label>
+                            <input {...field} id="first_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter first name" />
                         </div>
                     )}
                 />

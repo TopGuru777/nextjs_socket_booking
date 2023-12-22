@@ -1,33 +1,44 @@
-export const HumanSchema = {
+export const CustomerSchema = {
   version: 0,
-  title: 'human schema with composite primary',
+  title: 'Customer Schema',
   primaryKey: {
       // where should the composed string be stored
-      key: 'id',
+      key: 'uuid',
       // fields that will be used to create the composed key
       fields: [
-          'firstName',
-          'lastName'
+          'uuid'
       ],
       // separator which is used to concat the fields values.
       separator: '|'
   },
   type: 'object',
   properties: {
-      id: {
+      uuid: {
           type: 'string',
           maxLength: 100 // <- the primary key must have set maxLength
       },
-      firstName: {
+      nid: {
           type: 'string'
       },
-      lastName: {
+      email: {
           type: 'string'
-      }
+      },
+      first_name: {
+          type: 'string'
+      },
+      last_name: {
+          type: 'string'
+      },
+      phone: {
+          type: 'string'
+      },
   },
   required: [
-    'id', 
-    'firstName',
-    'lastName'
+    'uuid',
+    'nid',
+    'email',
+    'first_name',
+    'last_name',
+    'phone',
   ]
 };
