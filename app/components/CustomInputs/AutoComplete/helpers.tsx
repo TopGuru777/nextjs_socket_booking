@@ -8,6 +8,7 @@ import { RxDatabase } from "rxdb"
  */
 
 export const getCustomerSuggestions = async (text: string, db: RxDatabase | null) => {
+  /*
   const suggestions = await db?.collections.customers.find({
     selector: {
       $or: [
@@ -17,5 +18,16 @@ export const getCustomerSuggestions = async (text: string, db: RxDatabase | null
       ]
     }
   }).exec();
+  */
+
+  const lowerCasedText = text.toLowerCase();
+  const allCustomers: any[] = await db?.collections.customers.find().exec() ?? [];
+  let suggestions: any[] = [];
+  allCustomers.forEach(customer => {
+    if (customer.phone.toLowerCase().includes(lowerCasedText) ||
+      `${customer.first_name} ${customer.last_name}`.toLowerCase().includes(lowerCasedText))
+      suggestions.push(customer);
+  });
+
   return suggestions;
 }

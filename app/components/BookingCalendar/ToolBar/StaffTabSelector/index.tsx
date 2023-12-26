@@ -1,11 +1,11 @@
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { useState } from 'react';
-import useStaffStore from '@/app/store';
+import useBookingCalendarStore from '@/app/store';
 
 
 const StaffTabSelector = () => {
-  const { currentStaff, setCurrentStaff, staffList } = useStaffStore(
+  const { currentStaff, setCurrentStaff, staffList } = useBookingCalendarStore(
     (state) => state
   );
 

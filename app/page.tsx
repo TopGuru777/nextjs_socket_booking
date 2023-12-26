@@ -1,11 +1,15 @@
 import dynamic from "next/dynamic";
 import { RxDBProvider } from "./db";
 
+
 const BookingCalendar = dynamic(() => import("@/app/components/BookingCalendar"), {
   ssr: false,
 });
 
+
+
 export default async function Home() {
+
   const defaultDate = new Date();
   return (
     <RxDBProvider>

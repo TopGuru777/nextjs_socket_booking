@@ -12,7 +12,6 @@ import {
   AutoCompleteItemButton,
   SpinningFaSpinner
 } from "../../styles";
-// import { areAllCharactersDigits } from '../../../utils/helper';
 import { useRxDB } from '@/app/db';
 import { getCustomerSuggestions } from './helpers';
 import { RxDatabase } from 'rxdb';
@@ -92,7 +91,6 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
 
 
   const suggestionSelected = (value: any) => {
-    // console.log(value.first_name, 'Niroj ')
     setIsComponentVisible(false);
 
     value.name = `${value.first_name} ${value.last_name}`;
@@ -195,7 +193,6 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
           value={search.text}
           onChange={onTextChanged}
           onFocus={onInputFocus}
-          // onChange={(e) => fetchUser(e.target.value)}
           type={"text"}
           style={inputStyle}
         />

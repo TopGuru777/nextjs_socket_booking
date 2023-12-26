@@ -13,6 +13,8 @@ import AppointmentDetailsContent from "../AppointmentDetailsContent";
 import { updateCustomer, createCustomer } from "../AppointmentCreateDialog/helpers";
 import { useRxDB } from "@/app/db";
 import { updateAppointmentStatus } from "../AppointmentEditForm/helpers";
+import useBookingCalendarStore from "@/app/store";
+
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {
@@ -34,7 +36,10 @@ const AppointmentDetailsForm = ({
   onAppointmentUpdated,
   onDeleteConfirm,
 }: Props) => {
+  //RxDB instance to access indexeddb
   const db = useRxDB();
+  //socket client for socket.io communication
+  const { socket } = useBookingCalendarStore((state) => state);
   const [customer, setCustomer] = useState<any>({
     name: event.name,
     email: event.email,
@@ -74,7 +79,7 @@ const AppointmentDetailsForm = ({
       const selectedStatus: any = status.find(
         (state) => state.uuid === value
       );
-      updateAppointmentStatus(selectedStatus, event.id, db);
+      updateAppointmentStatus(selectedStatus, event.id, db, socket);
       onAppointmentUpdated();
       onClose && onClose();
     },
@@ -135,7 +140,7 @@ const AppointmentDetailsForm = ({
    * @desc create new customer
    */
   const handleCreateCustomer = async (values: any) => {
-    const customerData = await createCustomer(values, db);
+    const customerData = await createCustomer(values, db, socket);
     setCustomer({ ...customerData, name: `${customerData.first_name} ${customerData.last_name}` });
     handleCreateCustomerClose();
   }
@@ -146,37 +151,10 @@ const AppointmentDetailsForm = ({
    * @desc edit customer
    */
   const handleUpdateCustomer = async (values: any) => {
-    let updatedData = await updateCustomer(values, customer, db);
+    let updatedData = await updateCustomer(values, customer, db, socket);
     setCustomer({ ...updatedData, name: `${updatedData.first_name} ${updatedData.last_name}` });
     handleFinishEditCustomer();
   }
-
-  useEffect(() => {
-    if (!socket) {
-      /*
-      void fetch("/api/socket");
-      socket = io();
-      socket.on("connect", () => {
-        console.log("connected");
-      });
-      socket.on("updateStatus", (msg) => {
-        console.log(msg);
-      });
-      socket.on("userServerConnection", () => {
-        console.log("a user connected (client)");
-      });
-      socket.on("userServerDisconnection", (socketid: string) => {
-        console.log(socketid);
-      });
-      */
-    }
-    return () => {
-      if (socket) {
-        socket.disconnect();
-        socket = null;
-      }
-    };
-  }, []);
 
   return (
     <div className="w-full bg-white text-black shadow-3xl rounded border border-gray-200">

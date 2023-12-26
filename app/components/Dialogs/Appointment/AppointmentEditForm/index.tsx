@@ -5,9 +5,10 @@ import SelectDateDropdown from "@/app/components/CustomInputs/SelectDateDropdown
 import { EventType, ServiceType } from "@/app/types";
 import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
 import { AutoComplete } from "../../../CustomInputs/AutoComplete";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { updateAppointment } from "./helpers";
 import { useRxDB } from "@/app/db";
+import useBookingCalendarStore from "@/app/store";
 
 interface Props {
   event: EventType;
@@ -21,7 +22,10 @@ interface Props {
 }
 
 const AppointmentEditForm = ({ event, services, staffs, customer, onClose, onUpdated, onEditCustomer, onNewCustomer }: Props) => {
+  //RxDB instance to access indexeddb
   const db = useRxDB();
+  //socket client for socket.io communication
+  const { socket } = useBookingCalendarStore((state) => state);
   const staffList = staffs.map((staff: any) => ({
     label: staff.staff_name,
     value: staff.staff_id,
@@ -58,7 +62,7 @@ const AppointmentEditForm = ({ event, services, staffs, customer, onClose, onUpd
     const startTime = moment(values.startTime).format();
     const endTime = moment(values.endTime).format();
 
-    const updatedData = updateAppointment({ ...values, selectedService, selectedStaff, startTime, endTime, appointment: event, customer }, db);
+    const updatedData = updateAppointment({ ...values, selectedService, selectedStaff, startTime, endTime, appointment: event, customer }, db, socket);
     onUpdated();
     onClose && onClose();
   };

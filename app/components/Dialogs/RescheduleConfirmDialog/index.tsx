@@ -4,6 +4,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import moment from "moment";
 import { rescheduleAppointment } from "./helpers";
 import { useRxDB } from "@/app/db";
+import useBookingCalendarStore from "@/app/store";
 
 interface Props {
   open: boolean;
@@ -19,7 +20,10 @@ const RescheduleConfirmDialog = ({
   onReschedule,
 }: Props) => {
   console.log(`@move event@`, event);
+  //RxDB instance for indexeddb operation
   const db = useRxDB();
+  //socket client for socket.io
+  const { socket } = useBookingCalendarStore((state) => state);
 
   const prevStartTime: Date = event?.start;
   const prevEndTime: Date = event?.end;
@@ -28,7 +32,7 @@ const RescheduleConfirmDialog = ({
   const endTime: Date = event?.new_end;
 
   const handleReschedule = () => {
-    rescheduleAppointment(event, db);
+    rescheduleAppointment(event, db, socket);
     onReschedule();
   };
 

@@ -10,6 +10,7 @@ import CustomerCreateForm from "../../Customer/CustomerCreateForm";
 import CustomerEditForm from "../../Customer/CustomerEditForm";
 import { createAppointment, createCustomer, updateCustomer } from "./helpers";
 import { useRxDB } from "@/app/db";
+import useBookingCalendarStore from "@/app/store";
 
 interface Props {
   open: boolean;
@@ -32,7 +33,10 @@ const AppointmentCreateDialog = ({
   addEvent,
   onClose,
 }: Props) => {
+  //RxDB instance to access indexeddb
   const db = useRxDB();
+  //socket client for socket.io
+  const { socket } = useBookingCalendarStore((state) => state);
   const [formValues, setFormValues] = useState({
     staffId: "",
     service: "",
@@ -73,13 +77,13 @@ const AppointmentCreateDialog = ({
   }
 
   const handleUpdateCustomer = async (values: any) => {
-    const updatedData = await updateCustomer(values, customer, db);
+    const updatedData = await updateCustomer(values, customer, db, socket);
     setCustomer({ ...updatedData, name: `${updatedData.first_name} ${updatedData.last_name}` })
     closeEditingCustomer();
   }
 
   const handleCreateCustomer = async (values: any) => {
-    const customerData = await createCustomer(values, db);
+    const customerData = await createCustomer(values, db, socket);
     setCustomer({ ...customerData, name: `${customerData.first_name} ${customerData.last_name}` });
     setNewGuest(false);
   }
@@ -102,7 +106,7 @@ const AppointmentCreateDialog = ({
     const name = `${customer?.first_name} ${customer?.last_name}`;
     const startTime = moment(values.startTime).format();
     const endTime = moment(values.endTime).format();
-    createAppointment({ ...values, selectedService, selectedStaff, selectedStatus, fullname: name, startTime, endTime }, customer, db);
+    createAppointment({ ...values, selectedService, selectedStaff, selectedStatus, fullname: name, startTime, endTime }, customer, db, socket);
     handleClose();
   };
 

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export interface StaffState {
+export interface State {
     //staffs for weekly tab
     staffList: any[],
     setStaffList: (value: any[]) => void,
@@ -14,9 +14,11 @@ export interface StaffState {
     setStartDate: (value: Date) => void,
     endDate: Date,
     setEndDate: (value: Date) => void,
+    socket: any,
+    setSocket: (value: any) => void
 };
 
-const useStaffStore = create<StaffState>((set) => ({
+const useBookingCalendarStore = create<State>((set) => ({
     staffList: [],
     setStaffList: (value: any[]) => set((state) => ({ staffList: value })),
     currentStaff: null,
@@ -26,7 +28,9 @@ const useStaffStore = create<StaffState>((set) => ({
     startDate: new Date(),
     setStartDate: (value: Date) => set((state) => ({ startDate: value})),
     endDate: new Date(),
-    setEndDate: (value:Date) => set((state) => ({ endDate: value}))
+    setEndDate: (value:Date) => set((state) => ({ endDate: value})),
+    socket: null,
+    setSocket: (value:any) => set((state) => ({ socket: value}))
 }));
 
-export default useStaffStore;
+export default useBookingCalendarStore;

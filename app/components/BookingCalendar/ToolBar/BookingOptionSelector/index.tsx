@@ -3,7 +3,7 @@ import { useState } from "react";
 import { format } from 'date-fns';
 import { type View } from "react-big-calendar";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import useStaffStore from '@/app/store';
+import useBookingCalendarStore from '@/app/store';
 
 interface Props {
   view: string;
@@ -21,9 +21,9 @@ const BookingOptionSelector = ({ view, date, onView }: Props) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string>(view);
 
-  const { setCurrentView } = useStaffStore(state => state);
+  const { setCurrentView } = useBookingCalendarStore(state => state);
 
-  const { currentStaff, setCurrentStaff, staffList } = useStaffStore(
+  const { currentStaff, setCurrentStaff, staffList } = useBookingCalendarStore(
     (state) => state
   );
 

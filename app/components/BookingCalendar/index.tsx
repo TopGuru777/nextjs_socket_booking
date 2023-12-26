@@ -18,7 +18,9 @@ import { fetchBookings, fetchCustomerList, fetchServices, fetchStaffList, fetchS
 import mt from "moment-timezone";
 import RescheduleConfirmDialog from "../Dialogs/RescheduleConfirmDialog";
 import CustomDnDCalendar from "./CustomDnDCalendar";
-import useStaffStore from "@/app/store";
+import useBookingCalendarStore from "@/app/store";
+import { io } from "socket.io-client";
+
 interface Props {
   defaultDate: Date;
   localizer?: DateLocalizer;
@@ -89,12 +91,15 @@ const getEvents = (events: BookingType[]): any[] => {
   });
 };
 
+
+
 const Calendar = ({
   defaultDate,
   localizer = defaultLocalizer,
   staffIdAccessor,
   staffNameAccessor,
 }: Props) => {
+  //RxDB instance for indexeddb operation
   const db: any = useRxDB();
 
   const [services, setServices] = useState<ServiceType[]>([]);
@@ -120,9 +125,46 @@ const Calendar = ({
   const randomColor =
     randomColors[Math.floor(Math.random() * randomColors.length)];
 
-  const { currentStaff, setCurrentStaff, staffList, setStaffList, currentView, startDate, endDate, setStartDate, setEndDate } = useStaffStore(
+  //Store for containing global level data
+  const { setSocket, currentStaff, setCurrentStaff, staffList, setStaffList, currentView, startDate, endDate, setStartDate, setEndDate } = useBookingCalendarStore(
     (state) => state
   );
+
+  useEffect(() => {
+
+    let socket: any = io("http://localhost:3001");
+    socket.emit("join_room", "global_room");
+    socket.on("booking_created", (data: any) => {
+      console.log("@booking_created@", data);
+      db.collections.bookings.upsert(data);
+    })
+    socket.on("booking_updated", (data: any) => {
+      console.log("@booking_updated@", data);
+      db.collections.bookings.upsert(data);
+    })
+    socket.on("booking_rescheduled", (data: any) => {
+      console.log("@booking_rescheduled@", data);
+      db.collections.bookings.upsert(data);
+    })
+    socket.on("booking_status_updated", (data: any) => {
+      console.log("@booking_status_updated@", data);
+      db.collections.bookings.upsert(data);
+    })
+    socket.on("customer_updated", (data: any) => {
+      console.log("@customer_updated@", data);
+      db.collections.customers.upsert(data);
+    })
+    socket.on("customer_created", (data: any) => {
+      console.log("@customer_created@", data);
+      db.collections.customers.upsert(data);
+    })
+    setSocket(socket);
+    return () => {
+      socket.disconnect();
+      setSocket(null);
+    }
+  }, [db])
+
 
   useEffect(() => {
     setStaffList(staffs);

@@ -1,8 +1,9 @@
 import { updateBooking as updateBookingBackend } from "@/app/api/services";
 import moment from "moment";
+import { onBookingRescheduled } from "@/app/api/socket";
 
 
-export const rescheduleAppointment = async (event: any, db: any) => {
+export const rescheduleAppointment = async (event: any, db: any, socket: any) => {
   const selectedStaff = event.selectedStaff;
   updateBookingBackend({
     type: "node--booking",
@@ -32,11 +33,13 @@ export const rescheduleAppointment = async (event: any, db: any) => {
   const previousData = await db.collections.bookings.findOne(event.id).exec();
 
   console.log('@reschedule prev data@', previousData);
-  
-  await db.collections.bookings.upsert({
+  const updatedBooking = {
     ...previousData._data,
     date_range: `${moment.utc(event.new_start).format('YYYY-MM-DDTHH:mm:ss')} - ${moment.utc(event.new_end).format('YYYY-MM-DDTHH:mm:ss')}`,
     staff_id: selectedStaff.staff_id.toString(),
     staff_title: selectedStaff?.staff_name,
-  })
+  }
+  
+  await db.collections.bookings.upsert(updatedBooking);
+  onBookingRescheduled(updatedBooking, socket);
 }

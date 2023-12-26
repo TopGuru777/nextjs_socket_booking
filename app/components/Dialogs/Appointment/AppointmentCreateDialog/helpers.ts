@@ -1,4 +1,5 @@
 import { createBooking, createCustomer as createCustomerBackend, updateCustomer as updateCustomerBackend } from "@/app/api/services";
+import { onBookingCreated, onCustomerCreated, onCustomerUpdated } from "@/app/api/socket";
 import moment from "moment";
 
 /**
@@ -9,7 +10,7 @@ import moment from "moment";
  * @returns response from server
  */
 
-export const createAppointment = async (values: any, customer: any, db: any) => {
+export const createAppointment = async (values: any, customer: any, db: any, socket: any) => {
   const selectedService = values.selectedService;
   const selectedStaff = values.selectedStaff;
   const selectedStatus = values.selectedStatus;
@@ -76,7 +77,7 @@ export const createAppointment = async (values: any, customer: any, db: any) => 
     relationships,
   });
 
-  db.collections.bookings.upsert({
+  const createdData = {
     uuid: response.data.id,
     nid: response.data.attributes.drupal_internal__nid.toString(),
     customer_email: customer.email,
@@ -91,7 +92,10 @@ export const createAppointment = async (values: any, customer: any, db: any) => 
     staff_id: selectedStaff.staff_id.toString(),
     staff_title: selectedStaff?.staff_name,
     status: selectedStatus ?? ""
-  })
+  };
+
+  db.collections.bookings.upsert(createdData);
+  onBookingCreated(createdData, socket);
   return response;
 };
 
@@ -103,7 +107,7 @@ export const createAppointment = async (values: any, customer: any, db: any) => 
  * @returns updated data
  */
 
-export const updateCustomer = async (values: any, customer: any, db: any) => {
+export const updateCustomer = async (values: any, customer: any, db: any, socket: any) => {
   let customerData: any = {
     type: "node--customers",
     id: customer.uuid,
@@ -125,6 +129,7 @@ export const updateCustomer = async (values: any, customer: any, db: any) => {
     phone: response.data.attributes.field_phone,
   };
   db.collections.customers.upsert(updatedData);
+  onCustomerUpdated(updatedData, socket);
   return updatedData;
 }
 
@@ -135,7 +140,7 @@ export const updateCustomer = async (values: any, customer: any, db: any) => {
  * @returns created data
  */
 
-export const createCustomer = async (values: any, db: any) => {
+export const createCustomer = async (values: any, db: any, socket: any) => {
   const name = `${values?.first_name} ${values?.last_name}`;
   const response = await createCustomerBackend({
     type: "node--customers",
@@ -158,6 +163,7 @@ export const createCustomer = async (values: any, db: any) => {
     phone: response.data.attributes.field_phone,
   };
   db.collections.customers.upsert(createdData);
+  onCustomerCreated(createdData, socket);
 
   return createdData;
 }

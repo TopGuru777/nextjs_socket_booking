@@ -1,5 +1,6 @@
 import { updateBooking as updateBookingBackend} from "@/app/api/services";
 import moment from "moment";
+import { onBookingUpdated, onBookingStatusUpdated } from "@/app/api/socket";
 
 /**
  * 
@@ -7,7 +8,7 @@ import moment from "moment";
  * @desc update appointment
  */
 
-export const updateAppointment = async (values: any, db: any) => {
+export const updateAppointment = async (values: any, db: any, socket: any) => {
   const selectedService = values.selectedService;
   const selectedStaff = values.selectedStaff;
   const startTime = values.startTime;
@@ -85,8 +86,8 @@ export const updateAppointment = async (values: any, db: any) => {
   const previousData = await db.collections.bookings.findOne(response.data.id).exec();
 
   console.log('@prev data@', previousData);
-  
-  await db.collections.bookings.upsert({
+
+  const updatedBooking = {
     uuid: response.data.id,
     nid: response.data.attributes.drupal_internal__nid.toString(),
     customer_email: customer.email,
@@ -101,7 +102,10 @@ export const updateAppointment = async (values: any, db: any) => {
     staff_id: selectedStaff.staff_id.toString(),
     staff_title: selectedStaff?.staff_name,
     status: previousData.status
-  })
+  }
+  
+  await db.collections.bookings.upsert(updatedBooking);
+  onBookingUpdated(updatedBooking, socket);
 
   return response;
 };
@@ -110,7 +114,7 @@ export const updateAppointment = async (values: any, db: any) => {
  * @param values appointment status, appointment id
  */
 
-export const updateAppointmentStatus = async (value: any, id: string, db: any) => {
+export const updateAppointmentStatus = async (value: any, id: string, db: any, socket: any) => {
   console.log('@status vaue@', value);
   const response: any = await updateBookingBackend({
     type: "node--booking",
@@ -130,8 +134,11 @@ export const updateAppointmentStatus = async (value: any, id: string, db: any) =
 
   const previousData = await db.collections.bookings.findOne(response.data.id).exec();
   
-  await db.collections.bookings.upsert({
+  const updatedBooking = {
     ...previousData._data,
     status: value.name,
-  })
+  }
+  await db.collections.bookings.upsert(updatedBooking);
+
+  onBookingStatusUpdated(updatedBooking, socket);
 }
