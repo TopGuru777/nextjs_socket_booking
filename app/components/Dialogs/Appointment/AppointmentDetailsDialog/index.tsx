@@ -10,7 +10,8 @@ type Props = {
     event: EventType,
     status: StatusType[];
     services: ServiceType[];
-    onUpdateEvent: (event: EventType) => void;
+    staffs: any[],
+    onAppointmentUpdated: () => void;
     onDeleteConfirm: (eventId: string) => void;
     onClose: () => void;
 }
@@ -20,7 +21,8 @@ export default function AppointmentDetailsDialog({
     event,
     status,
     services,
-    onUpdateEvent,
+    staffs,
+    onAppointmentUpdated,
     onDeleteConfirm,
     onClose
 }: Props) {
@@ -55,8 +57,9 @@ export default function AppointmentDetailsDialog({
                                         event={event}
                                         status={status}
                                         services={services}
+                                        staffs={staffs}
                                         onClose={onClose}
-                                        onUpdateEvent={onUpdateEvent}
+                                        onAppointmentUpdated={onAppointmentUpdated}
                                         onDeleteConfirm={onDeleteConfirm}
                                     />
                                 </Dialog.Panel>

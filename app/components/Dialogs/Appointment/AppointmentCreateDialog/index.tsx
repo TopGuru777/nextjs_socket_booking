@@ -9,6 +9,7 @@ import { classNames } from "@utils/helper";
 import CustomerCreateForm from "../../Customer/CustomerCreateForm";
 import CustomerEditForm from "../../Customer/CustomerEditForm";
 import { createAppointment, createCustomer, updateCustomer } from "./helpers";
+import { useRxDB } from "@/app/db";
 
 interface Props {
   open: boolean;
@@ -31,6 +32,7 @@ const AppointmentCreateDialog = ({
   addEvent,
   onClose,
 }: Props) => {
+  const db = useRxDB();
   const [formValues, setFormValues] = useState({
     staffId: "",
     service: "",
@@ -71,12 +73,22 @@ const AppointmentCreateDialog = ({
   }
 
   const handleUpdateCustomer = async (values: any) => {
-    updateCustomer(values, customer);
-    console.log('----updated customer----', values);
-    setCustomer({ ...values, name: `${values.first_name} ${values.last_name}` });
+    const updatedData = await updateCustomer(values, customer, db);
+    setCustomer({ ...updatedData, name: `${updatedData.first_name} ${updatedData.last_name}` })
     closeEditingCustomer();
   }
 
+  const handleCreateCustomer = async (values: any) => {
+    const customerData = await createCustomer(values, db);
+    setCustomer({ ...customerData, name: `${customerData.first_name} ${customerData.last_name}` });
+    setNewGuest(false);
+  }
+
+  /**
+   * 
+   * @param values appointment data
+   * @desc create an appointment
+   */
   const handleSubmit = async (values: any) => {
     const selectedService = services.find(
       (service) => service.uuid === values.service
@@ -90,40 +102,17 @@ const AppointmentCreateDialog = ({
     const name = `${customer?.first_name} ${customer?.last_name}`;
     const startTime = moment(values.startTime).format();
     const endTime = moment(values.endTime).format();
-    const response: any = await createAppointment({ ...values, selectedService, selectedStaff, selectedStatus, fullname: name, startTime, endTime }, customer);
-    addEvent({
-      id: response.data.id,
-      start: moment(values.startTime).toDate(),
-      end: moment(values.endTime).toDate(),
-      resourceId: values.staffId,
-      service: selectedService?.title,
-      cost: selectedService?.cost,
-      duration: selectedService?.duration,
-      title: customer.name || name,
-      status: selectedStatus?.name,
-      name: customer.name || name,
-      email: customer.email,
-      phone: customer.phone,
-    });
+    createAppointment({ ...values, selectedService, selectedStaff, selectedStatus, fullname: name, startTime, endTime }, customer, db);
     handleClose();
   };
 
+  /**
+   * 
+   * @param values appointment data
+   * @desc save form values when switching dialog to edit or create customer dialog
+   */
   const saveFormValues = async (values: any) => {
     setFormValues(values);
-  }
-
-  const handleAddGuest = async (values: any) => {
-    const customerData = await createCustomer(values);
-    setCustomer({
-      name: `${customerData.field_first_name} ${customerData.field_last_name}`,
-      email: customerData.field_email_address,
-      first_name: customerData.field_first_name,
-      last_name: customerData.field_last_name,
-      phone: customerData.field_phone,
-      nid: customerData.drupal_internal__nid,
-      uuid: customerData.id
-    });
-    setNewGuest(false);
   }
 
   const handleClose = () => {
@@ -236,7 +225,7 @@ const AppointmentCreateDialog = ({
                             <XMarkIcon className="h-6 w-6" />
                           </button>
                         </Dialog.Title>
-                        <CustomerCreateForm onSubmit={handleAddGuest} phone={newPhone} />
+                        <CustomerCreateForm onSubmit={handleCreateCustomer} phone={newPhone} />
                       </>
                     )}
                   {showEditCustomer && (

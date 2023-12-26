@@ -12,7 +12,10 @@ import {
   AutoCompleteItemButton,
   SpinningFaSpinner
 } from "../../styles";
-import { areAllCharactersDigits } from '../../../utils/helper';
+// import { areAllCharactersDigits } from '../../../utils/helper';
+import { useRxDB } from '@/app/db';
+import { getCustomerSuggestions } from './helpers';
+import { RxDatabase } from 'rxdb';
 
 const Root = styled.div`
   position: relative;
@@ -52,6 +55,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
   onEditCustomer,
   saveValues
 }) => {
+  const db: RxDatabase | null = useRxDB();
   const [search, setSearch] = useState({
     text: data.name || "",
     suggestions: []
@@ -66,7 +70,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
    * */
   const onInputFocus = (e: FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value.length >= 3 && areAllCharactersDigits(value)) {
+    if (value.length >= 3) {
       fetchUser(value);
     }
   }
@@ -78,7 +82,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
     const value = e.target.value;
     let suggestions = [] as any;
     setSelected(false);
-    if (value.length >= 3 && areAllCharactersDigits(value)) {
+    if (value.length >= 3) {
       fetchUser(value);
     } else {
       setIsComponentVisible(false);
@@ -107,10 +111,17 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
    * @param text 
    * @desc get suggestions 
    */
-  const fetchUser = (text: string) => {
+  const fetchUser = async (text: string) => {
     let suggestions = [] as any;
     setSearch({ suggestions, text });
     setLoading(true);
+
+    suggestions = await getCustomerSuggestions(text, db);
+    console.log(suggestions);
+    setLoading(false);
+    setIsComponentVisible(true);
+    setSearch({ suggestions, text: text });
+    /*
     const response = fetch(`https://irislashinc.com/api/irislash-core-customer/${text}?_format=json`,
       { headers: { Authorization: AUTH_TOKEN, }, })
       .then((response) => {
@@ -129,6 +140,7 @@ export const AutoComplete: FC<AutoCompleteProps> = ({
         setIsComponentVisible(true);
         setSearch({ suggestions, text: text });
       })
+      */
   }
 
   const { suggestions } = search;

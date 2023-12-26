@@ -10,13 +10,13 @@ const BASE_API = process.env.NEXT_PUBLIC_BASE_API;
     customer_phone, customer_uuid, customer_email, staff_id, staff_title, status
  */
 
-export const getBookingList = async () => {
+export const getBookingList = async (startDate: Date, endDate: Date) => {
 
   // const current_local_date = moment('20231214').tz("America/New_York").format("YYYY-MM-DD");
   // const current_local_date = moment().tz("America/New_York").format("YYYY-MM-DD");
   
-  const start_date = moment().add(-15, 'day').format("YYYY-MM-DD");
-  const end_date = moment().add(15, 'day').format("YYYY-MM-DD");
+  const start_date = moment(startDate).format("YYYY-MM-DD");
+  const end_date = moment(endDate).format("YYYY-MM-DD");
 
   // console.log(moment('2023-12-14T00:00').tz("America/New_York"),"Niroj Gahle ------------------------- ");
   // console.log(moment(`${current_local_date}T00:00`).tz("UTC").format("YYYYMMDD"),"Starting");
@@ -232,7 +232,7 @@ export const updateCustomer = async (data: any) => {
  */
 
 export const updateBooking = async (data: any) => {
-  console.log('-----update booking-----', data);
+  // console.log('-----update booking-----', data);
   try {
     const response = await fetch(
       `https://irislashinc.com/jsonapi/node/booking/${data.id}`,

@@ -1,6 +1,15 @@
 import { createBooking, createCustomer as createCustomerBackend, updateCustomer as updateCustomerBackend } from "@/app/api/services";
+import moment from "moment";
 
-export const createAppointment = async (values: any, customer: any) => {
+/**
+ * 
+ * @param values appointment details
+ * @param customer customer data
+ * @param db rxdb instance
+ * @returns response from server
+ */
+
+export const createAppointment = async (values: any, customer: any, db: any) => {
   const selectedService = values.selectedService;
   const selectedStaff = values.selectedStaff;
   const selectedStatus = values.selectedStatus;
@@ -66,11 +75,35 @@ export const createAppointment = async (values: any, customer: any) => {
     },
     relationships,
   });
-  console.log('----create response----', response);
+
+  db.collections.bookings.upsert({
+    uuid: response.data.id,
+    nid: response.data.attributes.drupal_internal__nid.toString(),
+    customer_email: customer.email,
+    customer_first_name: customer.first_name,
+    customer_last_name: customer.last_name,
+    customer_phone: customer.phone,
+    customer_uuid: customer.uuid,
+    date_range: `${moment.utc(response.data.attributes.field_date_range.value).format('YYYY-MM-DDTHH:mm:ss')} - ${moment.utc(response.data.attributes.field_date_range.end_value).format('YYYY-MM-DDTHH:mm:ss')}`,
+    service_cost: selectedService.cost,
+    service_duration: selectedService.duration,
+    service_name: selectedService.title,
+    staff_id: selectedStaff.staff_id.toString(),
+    staff_title: selectedStaff?.staff_name,
+    status: selectedStatus ?? ""
+  })
   return response;
 };
 
-export const updateCustomer = async (values: any, customer: any) => {
+/**
+ * 
+ * @param values new customer data
+ * @param customer customer data(use uuid)
+ * @param db rxdb instance
+ * @returns updated data
+ */
+
+export const updateCustomer = async (values: any, customer: any, db: any) => {
   let customerData: any = {
     type: "node--customers",
     id: customer.uuid,
@@ -82,10 +115,27 @@ export const updateCustomer = async (values: any, customer: any) => {
       field_phone: values.phone
     }
   }
-  let response = await updateCustomerBackend(customerData);;
+  let response = await updateCustomerBackend(customerData);
+  let updatedData = {
+    uuid: response.data.id,
+    nid: response.data.attributes.drupal_internal__nid,
+    email: response.data.attributes.field_email_address,
+    first_name: response.data.attributes.field_first_name,
+    last_name: response.data.attributes.field_last_name,
+    phone: response.data.attributes.field_phone,
+  };
+  db.collections.customers.upsert(updatedData);
+  return updatedData;
 }
 
-export const createCustomer = async (values: any) => {
+/**
+ * 
+ * @param values customer data
+ * @param db rxdb instance
+ * @returns created data
+ */
+
+export const createCustomer = async (values: any, db: any) => {
   const name = `${values?.first_name} ${values?.last_name}`;
   const response = await createCustomerBackend({
     type: "node--customers",
@@ -98,5 +148,16 @@ export const createCustomer = async (values: any) => {
       body: null,
     },
   });
-  return {...response.data.attributes, id: response.data.id};
+  
+  let createdData = {
+    uuid: response.data.id,
+    nid: response.data.attributes.drupal_internal__nid,
+    email: response.data.attributes.field_email_address,
+    first_name: response.data.attributes.field_first_name,
+    last_name: response.data.attributes.field_last_name,
+    phone: response.data.attributes.field_phone,
+  };
+  db.collections.customers.upsert(createdData);
+
+  return createdData;
 }

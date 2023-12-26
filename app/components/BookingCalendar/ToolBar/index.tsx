@@ -1,12 +1,16 @@
-import { type ToolbarProps } from "react-big-calendar";
+import { Views, type ToolbarProps } from "react-big-calendar";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import DropDown from "../BookingOptionSelector";
+import BookingOptionSelector from "./BookingOptionSelector";
 import CustomDatePicker from "../../CustomInputs/DatePicker";
+import StaffTabSelector from "./StaffTabSelector";
 
 const Toolbar = ({ label, date, view, onNavigate, onView }: ToolbarProps) => {
   return (
     <div className="grid grid-cols-3 gap-4 p-6">
-      <DropDown date={date} view={view} onView={onView} />
+      <div className="flex flex-row">
+        <BookingOptionSelector date={date} view={view} onView={onView} />
+        {view === Views.WEEK && <StaffTabSelector />}
+      </div>
       <div className="flex flex-row justify-center">
         <button
           type="button"

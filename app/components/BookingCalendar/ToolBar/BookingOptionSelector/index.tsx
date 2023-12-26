@@ -3,6 +3,7 @@ import { useState } from "react";
 import { format } from 'date-fns';
 import { type View } from "react-big-calendar";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import useStaffStore from '@/app/store';
 
 interface Props {
   view: string;
@@ -15,10 +16,16 @@ const options = [
   { label: "Weekly", value: "week" },
 ];
 
-const DropDown = ({ view, date, onView }: Props) => {
+const BookingOptionSelector = ({ view, date, onView }: Props) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string>(view);
+
+  const { setCurrentView } = useStaffStore(state => state);
+
+  const { currentStaff, setCurrentStaff, staffList } = useStaffStore(
+    (state) => state
+  );
 
   const handleClick = () => {
     setOpen(!open);
@@ -26,9 +33,11 @@ const DropDown = ({ view, date, onView }: Props) => {
 
   const handleChange = (value: View) => {
     const selectedItem = options.find((item) => item.value === value);
+    setCurrentStaff(staffList[0]);
     onView(value);
     setSelected(value);
     setOpen(false);
+    setCurrentView(value);
     router.replace(`/#${selectedItem?.label.toLowerCase()}/0/${format(date, 'ddMMyyyy')}`)
   };
 
@@ -46,9 +55,8 @@ const DropDown = ({ view, date, onView }: Props) => {
       </button>
       <div
         id="dropdown-states"
-        className={`z-50 absolute bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 ${
-          open ? "block" : "hidden"
-        }`}
+        className={`z-50 absolute bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 ${open ? "block" : "hidden"
+          }`}
       >
         <ul
           className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -73,4 +81,4 @@ const DropDown = ({ view, date, onView }: Props) => {
   );
 };
 
-export default DropDown;
+export default BookingOptionSelector;

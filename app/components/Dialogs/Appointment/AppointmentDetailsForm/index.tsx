@@ -5,20 +5,23 @@ import AppointmentEditForm from "../AppointmentEditForm";
 import { ServiceType, StatusType } from "@/app/types";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { EventType } from "@/app/types";
-import { updateBooking, updateCustomer, createCustomer } from "@/app/api/services";
 import { ClientToServerEvents, ServerToClientEvents } from "@/app/types/socket";
 import CustomerEditForm from "../../Customer/CustomerEditForm";
 import CustomerCreateForm from "../../Customer/CustomerCreateForm";
 import { Dialog } from "@headlessui/react";
 import AppointmentDetailsContent from "../AppointmentDetailsContent";
+import { updateCustomer, createCustomer } from "../AppointmentCreateDialog/helpers";
+import { useRxDB } from "@/app/db";
+import { updateAppointmentStatus } from "../AppointmentEditForm/helpers";
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 interface Props {
   event: EventType,
   status: StatusType[];
   services: ServiceType[];
+  staffs: any[];
   onClose: () => void;
-  onUpdateEvent: (event: EventType) => void;
+  onAppointmentUpdated: () => void;
   onDeleteConfirm: (eventId: string) => void;
 }
 
@@ -26,10 +29,12 @@ const AppointmentDetailsForm = ({
   event,
   status,
   services,
+  staffs,
   onClose,
-  onUpdateEvent,
+  onAppointmentUpdated,
   onDeleteConfirm,
 }: Props) => {
+  const db = useRxDB();
   const [customer, setCustomer] = useState<any>({
     name: event.name,
     email: event.email,
@@ -44,6 +49,10 @@ const AppointmentDetailsForm = ({
   const [newGuest, setNewGuest] = useState<boolean>(false);
   const [phoneInput, setPhoneInput] = useState<string>("");
 
+  /**
+   * @returns mapped status options
+   * @desc get status options array for dropdown from status list
+   */
   const statusOptions = useMemo(() => {
     return status?.map((value: StatusType) => {
       if (event.status === value.name) {
@@ -56,107 +65,90 @@ const AppointmentDetailsForm = ({
     });
   }, [status, event.status]);
 
-
+  /**
+   * @desc change appointment status
+   * @enum Paid, Confirmed, Running Rate
+   */
   const handleSelect = useCallback(
     (value: string) => {
-      setSelected(value);
-      const selectedStatus = statusOptions.find(
-        (option) => option.value === value
+      const selectedStatus: any = status.find(
+        (state) => state.uuid === value
       );
-      socket?.emit("updateStatus", value);
-      onUpdateEvent &&
-        onUpdateEvent({ ...event, status: selectedStatus?.label as string });
-      updateBooking({
-        type: "node--booking",
-        id: event.id,
-        relationships: {
-          field_status: {
-            data: [
-              {
-                type: "taxonomy_term--status",
-                id: value,
-              },
-            ],
-          },
-        },
-      });
+      updateAppointmentStatus(selectedStatus, event.id, db);
+      onAppointmentUpdated();
       onClose && onClose();
     },
-    [event, statusOptions, onUpdateEvent, onClose]
+    [event, statusOptions, onAppointmentUpdated, onClose]
   );
 
-  const handleEdit = useCallback(() => {
+  /**
+   * @desc start editing appointment
+   */
+  const handleEditAppointment = useCallback(() => {
     setShowEdit(!showEdit);
   }, [showEdit]);
 
-  const handleEditCustomer = (data: any) => {
+  /**
+   * 
+   * @param data customer data
+   * @desc start editing customer
+   */
+
+  const handleSetEditCustomer = (data: any) => {
     setCustomer(data);
     setEditCustomer(true);
     setShowEdit(false);
   }
 
-  const closeEditingCustomer = () => {
+  /**
+   * @desc stop editing customer
+   */
+
+  const handleFinishEditCustomer = () => {
     setEditCustomer(false);
     setShowEdit(true);
   }
 
-  const handleAddGuest = async (values: any) => {
-    const name = `${values?.first_name} ${values?.last_name}`;
-    const response = await createCustomer({
-      type: "node--customers",
-      attributes: {
-        title: name,
-        field_first_name: values.first_name,
-        field_last_name: values.last_name,
-        field_email_address: values.email,
-        field_phone: values.phone,
-        body: null,
-      },
-    });
-    const customerData = response.data.attributes
-    setCustomer({
-      name: `${customerData.field_first_name} ${customerData.field_last_name}`,
-      email: customerData.field_email_address,
-      first_name: customerData.field_first_name,
-      last_name: customerData.field_last_name,
-      phone: customerData.field_phone,
-      nid: customerData.drupal_internal__nid,
-      uuid: response.data.id
-    });
-    handleNewGuestClose();
-  }
+  /**
+   * @desc stop creating customer
+   */
 
-  const handleNewGuestClose = () => {
+  const handleCreateCustomerClose = () => {
     setNewGuest(false);
     setShowEdit(true);
   }
 
-  const handleCreateCustomer = (value: string) => {
+  /**
+   * 
+   * @param value phone number
+   * @desc start creating customer
+   */
+  const handleSetCreateCustomer = (value: string) => {
     setPhoneInput(value);
     setNewGuest(true);
     setShowEdit(false);
   }
 
-  const handleUpdateCustomer = async (values: any) => {
+  /**
+   * 
+   * @param values customer data
+   * @desc create new customer
+   */
+  const handleCreateCustomer = async (values: any) => {
+    const customerData = await createCustomer(values, db);
+    setCustomer({ ...customerData, name: `${customerData.first_name} ${customerData.last_name}` });
+    handleCreateCustomerClose();
+  }
 
-    let customerData: any = {
-      type: "node--customers",
-      id: customer.uuid,
-      attributes: {
-        title: `${values.first_name} ${values.last_name}`,
-        field_email_address: values.email,
-        field_first_name: values.first_name,
-        field_last_name: values.last_name,
-        field_phone: values.phone
-      }
-    }
-    console.log('-----data----', customerData);
-    let response = await updateCustomer(customerData);
-    console.log('----response----', response);
-    values.name = `${values.first_name} ${values.last_name}`;
-    values.id = customer.uuid;
-    setCustomer(values);
-    closeEditingCustomer();
+  /**
+   * 
+   * @param values customer data
+   * @desc edit customer
+   */
+  const handleUpdateCustomer = async (values: any) => {
+    let updatedData = await updateCustomer(values, customer, db);
+    setCustomer({ ...updatedData, name: `${updatedData.first_name} ${updatedData.last_name}` });
+    handleFinishEditCustomer();
   }
 
   useEffect(() => {
@@ -185,7 +177,7 @@ const AppointmentDetailsForm = ({
       }
     };
   }, []);
-  console.log(event, "eventevent");
+
   return (
     <div className="w-full bg-white text-black shadow-3xl rounded border border-gray-200">
       {/* <div className="event-triangle" {...props.arrowProps} /> */}
@@ -209,7 +201,7 @@ const AppointmentDetailsForm = ({
       {!newGuest && !showEditCustomer && !showEdit && (
         <AppointmentDetailsContent
           event={event}
-          onEdit={handleEdit}
+          onEdit={handleEditAppointment}
           onDeleteConfirm={() => onDeleteConfirm(event.id)}
         />
       )}
@@ -218,30 +210,30 @@ const AppointmentDetailsForm = ({
           event={event}
           services={services}
           onClose={onClose}
+          staffs={staffs}
           customer={customer}
-          onUpdateEvent={onUpdateEvent}
-          editCustomer={handleEditCustomer}
-          onNewCustomer={handleCreateCustomer}
+          onUpdated={onAppointmentUpdated}
+          onEditCustomer={handleSetEditCustomer}
+          onNewCustomer={handleSetCreateCustomer}
         />
       )}
       {showEditCustomer && <CustomerEditForm data={customer} onSubmit={handleUpdateCustomer} />}
-      {
-        newGuest && (
-          <>
-            <Dialog.Title
-              as="div"
-              className="flex justify-between handle items-center shrink-0 p-4 bg-gray-200 text-blue-gray-900 antialiased font-sans text-lg font-semibold leading-snug"
-              style={{ cursor: "move" }}
-              id="draggable-dialog-title"
-            >
-              Add Guest
-              <button onClick={handleNewGuestClose}>
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </Dialog.Title>
-            <CustomerCreateForm onSubmit={handleAddGuest} phone={phoneInput} />
-          </>
-        )}
+      {newGuest && (
+        <>
+          <Dialog.Title
+            as="div"
+            className="flex justify-between handle items-center shrink-0 p-4 bg-gray-200 text-blue-gray-900 antialiased font-sans text-lg font-semibold leading-snug"
+            style={{ cursor: "move" }}
+            id="draggable-dialog-title"
+          >
+            Add Guest
+            <button onClick={handleCreateCustomerClose}>
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+          </Dialog.Title>
+          <CustomerCreateForm onSubmit={handleCreateCustomer} phone={phoneInput} />
+        </>
+      )}
     </div>
   );
 };

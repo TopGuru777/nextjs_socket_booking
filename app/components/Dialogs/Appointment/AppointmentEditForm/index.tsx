@@ -3,22 +3,29 @@ import { useForm, Controller } from "react-hook-form";
 import SelectDropdown from "@/app/components/CustomInputs/SelectDropdown";
 import SelectDateDropdown from "@/app/components/CustomInputs/SelectDateDropdown";
 import { EventType, ServiceType } from "@/app/types";
-import { updateBooking } from "@/app/api/services";
 import SelectTimeDropdown from "@/app/components/CustomInputs/SelectTimeDropdown";
 import { AutoComplete } from "../../../CustomInputs/AutoComplete";
+import { useEffect } from "react";
+import { updateAppointment } from "./helpers";
+import { useRxDB } from "@/app/db";
 
 interface Props {
   event: EventType;
   customer: any;
   services: ServiceType[];
+  staffs: any[];
   onClose: () => void;
-  onUpdateEvent: (event: EventType) => void;
-  editCustomer: (values: any) => void;
+  onUpdated: () => void;
+  onEditCustomer: (values: any) => void;
   onNewCustomer: (value: string) => void;
 }
 
-const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent, editCustomer, onNewCustomer }: Props) => {
-  // console.log(event);
+const AppointmentEditForm = ({ event, services, staffs, customer, onClose, onUpdated, onEditCustomer, onNewCustomer }: Props) => {
+  const db = useRxDB();
+  const staffList = staffs.map((staff: any) => ({
+    label: staff.staff_name,
+    value: staff.staff_id,
+  }));
 
   const serviceOptions = services.map((service: ServiceType) => ({
     label: service.title,
@@ -36,6 +43,7 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
     formState: { isValid },
   } = useForm({
     defaultValues: {
+      staffId: event.resourceId ?? "0",
       service: selectedService?.value,
       eventDate: event.start,
       customer: customer,
@@ -45,70 +53,14 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
   });
 
   const handleSubmitValues = (values: any) => {
-    const selectedService = services.find(
-      (service) => service.uuid === values.service
-    );
+    const selectedService = services.find((service) => service.uuid === values.service);
+    const selectedStaff = staffs.find((staff) => staff.staff_id === values.staffId);
     const startTime = moment(values.startTime).format();
     const endTime = moment(values.endTime).format();
-    let data = {
-      ...event,
-      service: selectedService?.title as string,
-      start: moment(values.startTime).toDate(),
-      end: moment(values.endTime).toDate(),
-      phone: values.customer.phone || customer.phone,
-      email: values.customer.email || customer.email,
-    };
-    const title = values.customer.name || customer.name;
-    let relationships: any = {
-      field_service: {
-        data: [
-          {
-            type: "node--services",
-            id: values.service,
-          },
-        ],
-      },
-    };
-    if (title) {
-      data = {
-        ...data,
-        title,
-        name: title,
-      };
-    }
-    onUpdateEvent && onUpdateEvent(data);
+
+    const updatedData = updateAppointment({ ...values, selectedService, selectedStaff, startTime, endTime, appointment: event, customer }, db);
+    onUpdated();
     onClose && onClose();
-    if (values.customer.id || customer.id) {
-      console.log('----www-----', customer.id);
-      relationships = {
-        ...relationships,
-        field_customer: {
-          data: [
-            {
-              type: "node--customers",
-              id: values.customer.id || customer.id,
-            },
-          ],
-        },
-      };
-    }
-    console.log('----update booking----', relationships);
-    updateBooking({
-      type: "node--booking",
-      id: event.id,
-      attributes: {
-        title: event.title,
-        field_date_range: {
-          value: startTime,
-          end_value: endTime,
-          duration: Number(selectedService?.duration),
-          rrule: null,
-          rrule_index: null,
-          timezone: "UTC",
-        },
-      },
-      relationships,
-    });
   };
 
   return (
@@ -124,12 +76,19 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
             const selectedService = services.find(
               (service: ServiceType) => service.uuid === value
             );
-            if (selectedService) {
-              const endTime = moment(watch("startTime"))
-                .add(Number(selectedService?.duration), "minutes")
-                .valueOf();
-              setValue("endTime", endTime as number);
-            }
+            useEffect(() => {
+              const selectedService = services.find(
+                (service: ServiceType) => service.uuid === value
+              );
+              if (selectedService) {
+                const endTime = moment(watch("startTime"))
+                  .add(Number(selectedService?.duration), "minutes")
+                  .valueOf();
+                setValue("endTime", endTime as number);
+              }
+            }, [value])
+
+
             return (
               <div className="mb-3">
                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Service</label>
@@ -154,6 +113,20 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
               </div>
             );
           }}
+        />
+
+        <Controller
+          control={control}
+          name="staffId"
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, value } }) => (
+            <div className="mb-3">
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Provider</label>
+              <SelectDropdown selected={value} options={staffList} onChange={(selected) => onChange(selected.value)} />
+            </div>
+          )}
         />
         <Controller
           control={control}
@@ -247,7 +220,7 @@ const AppointmentEditForm = ({ event, services, customer, onClose, onUpdateEvent
                 data={value}
                 onAddNew={onNewCustomer}
                 onSetValue={onChange}
-                onEditCustomer={() => editCustomer(value)}
+                onEditCustomer={() => onEditCustomer(value)}
                 saveValues={() => { }}
               />
             </div>

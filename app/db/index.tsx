@@ -6,6 +6,7 @@ import { RxDBJsonDumpPlugin } from 'rxdb/plugins/json-dump';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { BookingSchema, ServiceSchema, StaffSchema, StatusSchema, CustomerSchema } from './schemas';
 import { getBookingList, getCustomerList, getServiceList, getStaffList, getStatusList } from '../api/services';
+import moment from 'moment';
 
 // Install the necessary plugins
 addRxPlugin(RxDBDevModePlugin);
@@ -18,6 +19,31 @@ export const RxDBContext = createContext(null);
 export const useRxDB = () => {
   return useContext(RxDBContext);
 };
+
+export const fetchBookings = async (startDate: Date, endDate: Date, db: any) => {
+  const bookingList = await getBookingList(startDate, endDate);
+  db.collections.bookings.bulkUpsert(bookingList);
+}
+
+export const fetchServices = async (db: any) => {
+  const serviceList = await getServiceList();
+  db.collections.services.bulkUpsert(serviceList);
+}
+
+export const fetchStaffList = async (db: any) => {
+  const staffList = await getStaffList();
+  db.collections.staffs.bulkUpsert(staffList);
+}
+
+export const fetchStatusList = async (db: any) => {
+  const statusList = await getStatusList();
+  db.collections.statuses.bulkUpsert(statusList);
+}
+
+export const fetchCustomerList = async (db: any) => {
+  const customerList = await getCustomerList();
+  db.collections.customers.bulkUpsert(customerList);
+}
 
 const initDb = async () => {
   const indexedDBStorage = getRxStorageDexie();
@@ -44,21 +70,6 @@ const initDb = async () => {
       schema: CustomerSchema
     }
   });
-
-  const serviceList = await getServiceList();
-  db.collections.services.bulkUpsert(serviceList);
-
-  const bookingList = await getBookingList();
-  db.collections.bookings.bulkUpsert(bookingList);
-
-  const staffList = await getStaffList();
-  db.collections.staffs.bulkUpsert(staffList);
-
-  const statusList = await getStatusList();
-  db.collections.statuses.bulkUpsert(statusList);
-
-  const customerList = await getCustomerList();
-  db.collections.customers.bulkUpsert(customerList);
 
   return db;
 };

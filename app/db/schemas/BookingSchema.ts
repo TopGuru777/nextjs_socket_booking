@@ -50,7 +50,7 @@ export const BookingSchema = {
       staff_id: {
         type: 'string'
       },
-      status_title: {
+      staff_title: {
         type: 'string'
       },
       status : {
@@ -70,7 +70,7 @@ export const BookingSchema = {
     'service_duration',
     'service_name',
     'staff_id',
-    'status_title',
+    'staff_title',
     'status'
   ]
 };
