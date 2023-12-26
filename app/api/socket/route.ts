@@ -5,7 +5,7 @@ import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from "@/app/types/socket";
-
+/*
 export default function ioHandler(
   req: NextApiRequest,
   res: NextApiResponseWithSocket
@@ -42,3 +42,4 @@ export default function ioHandler(
 
 export const dynamic = "auto";
 export const runtime = "nodejs";
+*/
