@@ -20,7 +20,7 @@
     "@types/socket.io": "^3.0.2",
     "date-fns": "^2.30.0",
     "eslint": "8.47.0",
-    "eslint-config-next": "13.4.13",
+    "eslint-config-next": "13.4.12",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "next": "13.4.13",

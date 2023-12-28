@@ -130,9 +130,14 @@ const Calendar = ({
     (state) => state
   );
 
-  useEffect(() => {
+  const initializeSocket = async () => {
+    await fetch("/api/socket");
+    // let socket: any = io("http://localhost:3001");
 
-    let socket: any = io("http://localhost:3001");
+    let socket = io("/", {
+      path: "/api/socketio"
+    });
+
     socket.emit("join_room", "global_room");
     socket.on("booking_created", (data: any) => {
       console.log("@booking_created@", data);
@@ -163,6 +168,10 @@ const Calendar = ({
       socket.disconnect();
       setSocket(null);
     }
+  }
+
+  useEffect(() => {
+    initializeSocket();
   }, [db])
 
 
